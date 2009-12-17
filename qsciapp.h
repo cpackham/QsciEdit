@@ -2,7 +2,7 @@
 #define QSCIAPP_H
 
 #include <QMainWindow>
-class QPlainTextEdit;
+class QsciScintilla;
 
 class QsciApp : public QMainWindow
 {
@@ -15,7 +15,7 @@ private slots:
 	void documentWasModified();
 
 private:
-	QPlainTextEdit *textEdit;
+	QsciScintilla *textEdit;
 };
 #endif
 
