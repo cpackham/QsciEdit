@@ -12,22 +12,24 @@ QsciApp::QsciApp()
 {
 	textEdit = new QsciScintilla;
 
+	// Order here is important
+	setCurrentFile("");
+	loadSettings();
 	createActions();
 	createMenus();
 	createToolBars();
 	createStatusBar();
 	setAcceptDrops(true);
 	setCentralWidget(textEdit);
-	setCurrentFile("");
 
 	// The QsciScintilla drag & drop behaviour is to put the URL in as text
 	// in the current document. We want it to open the file url so disable
 	// the QsciScintilla behaviour.
 	textEdit->setAcceptDrops(false);
+
 	connect(textEdit, SIGNAL(modificationChanged(bool)),
 		this, SLOT(documentModified(bool)));
 
-	loadSettings();
 }
 
 void QsciApp::closeEvent(QCloseEvent *event)
@@ -173,18 +175,18 @@ void QsciApp::createActions()
 	act->setChecked(enable); \
 	connect(act, SIGNAL(triggered(bool)), this, SLOT(slot))
 
-	foldAct = new QAction(tr("Folding"), this);
-	foldAct->setStatusTip(tr("Enable/disable code folding"));
-	foldAct->setCheckable(true);
-	foldAct->setChecked(false);
-	connect(foldAct, SIGNAL(triggered(bool)), this, SLOT(setFolding(bool)));
-
+	checkable_act(foldAct, tr("Folding"), 
+		tr("Enable/disable code folding"),
+		setFolding(bool),
+		textEdit->folding() != QsciScintilla::NoFoldStyle);
 	checkable_act(autoCompAct, tr("Auto completion"),
 		tr("Enable/disable auto completion"),
-		setAutoCompletion(bool),false);
+		setAutoCompletion(bool),
+		textEdit->autoCompletionSource() != QsciScintilla::AcsNone);
 	checkable_act(braceMatchAct, tr("Brace Matching"),
 		tr("Enable/disable brace matching"),
-		setBraceMatching(bool), false);
+		setBraceMatching(bool), 
+		textEdit->braceMatching() != QsciScintilla::NoBraceMatch);
 	
 	// Help actions
 	aboutAct = new QAction(QtIconLoader::icon("help-about"), "&About", this);
@@ -391,10 +393,19 @@ void QsciApp::loadSettings()
 	QPoint pos = settings.value("pos", QPoint(0,0)).toPoint();
 	QSize size = settings.value("size", QSize(600,700)).toSize();
 	QString file = settings.value("file", "").toString();
+	settings.beginGroup("editor settings");
+	bool folding = settings.value("folding", false).toBool();
+	bool autocomplete = settings.value("auto completion", false).toBool();
+	bool bracematch = settings.value("brace matching", false).toBool();
+	settings.endGroup();
+
 	move (pos);
 	resize(size);
 	if (!file.isEmpty())
 		loadFile(file);
+	setFolding(folding);
+	setAutoCompletion(autocomplete);
+	setBraceMatching(bracematch);
 }
 
 void QsciApp::saveSettings()
@@ -403,4 +414,9 @@ void QsciApp::saveSettings()
 	settings.setValue("pos", pos());
 	settings.setValue("size", size());
 	settings.setValue("file", curFile);
+	settings.beginGroup("editor settings");
+	settings.setValue("folding", textEdit->folding() != QsciScintilla::NoFoldStyle);
+	settings.setValue("brace matching", textEdit->braceMatching() != QsciScintilla::NoBraceMatch);
+	settings.setValue("auto completion", textEdit->autoCompletionSource() != QsciScintilla::AcsNone);
+	settings.endGroup();
 }
