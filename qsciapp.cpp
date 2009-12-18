@@ -1,14 +1,12 @@
 #include <QtGui>
 #include <qsciscintilla.h>
-#include <qscilexercpp.h>
 #include "qsciapp.h"
 #include "qticonloader.h"
+#include "lexersel.h"
 
 QsciApp::QsciApp()
 {
 	textEdit = new QsciScintilla;
-	QsciLexerCPP *lexer = new QsciLexerCPP;
-	textEdit->setLexer(lexer);
 
 	createActions();
 	createMenus();
@@ -249,4 +247,5 @@ void QsciApp::setCurrentFile(const QString &fileName)
 		shownName = QFileInfo(curFile).fileName();
 
 	setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("QsciApp")));
+	textEdit->setLexer(LexerSelector::getLexerForFile(fileName));
 }

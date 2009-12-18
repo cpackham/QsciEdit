@@ -7,9 +7,11 @@ QT += xml
 
 SOURCES = qsciapp.cpp \
 	qticonloader.cpp \
+	lexersel.cpp \
 	main.cpp
 HEADERS = qsciapp.h \
-	qticonloader.h
+	qticonloader.h \
+	lexersel.h
 
 INCLUDEPATH += $${QSCI_HEADER_PATH}/Qsci
 
