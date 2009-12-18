@@ -9,7 +9,7 @@ class QsciApp : public QMainWindow
 	Q_OBJECT
 
 public:
-	QsciApp();
+	QsciApp(const QString = 0);
 
 public slots:
 	void newFile();

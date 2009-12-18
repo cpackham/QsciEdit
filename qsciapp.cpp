@@ -8,12 +8,14 @@
 const QString APPLICATION_NAME = "QsciApp";
 const QString COMPANY_NAME = "cpp";
 
-QsciApp::QsciApp()
+QsciApp::QsciApp(const QString fileName)
 {
 	textEdit = new QsciScintilla;
 
 	// Order here is important
 	setCurrentFile("");
+	if (!fileName.isEmpty())
+		loadFile(fileName);
 	loadSettings();
 	createActions();
 	createMenus();
@@ -29,7 +31,6 @@ QsciApp::QsciApp()
 
 	connect(textEdit, SIGNAL(modificationChanged(bool)),
 		this, SLOT(documentModified(bool)));
-
 }
 
 void QsciApp::closeEvent(QCloseEvent *event)
@@ -391,7 +392,7 @@ void QsciApp::loadSettings()
 
 	move (pos);
 	resize(size);
-	if (!file.isEmpty())
+	if (curFile.isEmpty() && !file.isEmpty())
 		loadFile(file);
 	setFolding(folding);
 	setAutoCompletion(autocomplete);
