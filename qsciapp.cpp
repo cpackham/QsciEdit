@@ -214,7 +214,6 @@ void QsciApp::createMenus()
 	editMenu->addAction(copyAct);
 	editMenu->addAction(pasteAct);
 
-	viewMenu = menuBar()->addMenu(tr("&View"));
 	settingsMenu = menuBar()->addMenu(tr("&Settings"));
 	settingsMenu->addAction(foldAct);
 	settingsMenu->addAction(autoCompAct);

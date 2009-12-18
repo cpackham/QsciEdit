@@ -52,7 +52,6 @@ private:
 	QString curFile;
 	QMenu *fileMenu;
 	QMenu *editMenu;
-	QMenu *viewMenu;
 	QMenu *settingsMenu;
 	QMenu *helpMenu;
 	QToolBar *fileToolBar;
