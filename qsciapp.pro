@@ -13,6 +13,8 @@ HEADERS = qsciapp.h \
 	qticonloader.h \
 	lexersel.h
 
+RESOURCES = qsciapp.qrc
+
 INCLUDEPATH += $${QSCI_HEADER_PATH}/Qsci
 
 LIBS += -L$${QSCI_LIB_PATH}/Qsci \

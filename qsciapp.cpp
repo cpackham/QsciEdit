@@ -292,20 +292,11 @@ void QsciApp::paste() { textEdit->paste(); };
 
 void QsciApp::about()
 {
-	QMessageBox::about(this, tr("About %1").arg(APPLICATION_NAME),
-			tr("<center>%1</center>"
-			   "<p>A simple programmers code editor, by a simple programmer.\n"
-			   "<p>%1 is licenced under the GPLv2 and makes use of "
-			   "the following LGPL components:\n"
-			   "<ul>\n"
-			   "<li> Qt C++ Toolkit <a href=\"%2\">%2</a>\n"
-			   "<li> QtIconloader <a href=\"%3\">%3</a>\n"
-			   "<li> QScintilla2 <a href=\"%4\">%4</a>\n"
-			   "</ul>\n")
-			   .arg(APPLICATION_NAME, 
-			   "http://qt.nokia.com/", 
-			   "http://code.google.com/p/qticonloader/",
-			   "http://www.riverbankcomputing.co.uk/software/qscintilla/"));
+	QFile file(":/about.html");
+	if(file.open(QFile::ReadOnly | QFile::Text)) {
+		QTextStream in(&file);
+		QMessageBox::about(this, tr("About %1").arg(APPLICATION_NAME), in.readAll());
+	}
 }
 
 bool QsciApp::saveIfModified()
