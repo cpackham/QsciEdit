@@ -2,6 +2,7 @@
 #include <qsciscintilla.h>
 #include <qscilexercpp.h>
 #include "qsciapp.h"
+#include "qticonloader.h"
 
 QsciApp::QsciApp()
 {
@@ -37,24 +38,28 @@ void QsciApp::documentWasModified()
 
 void QsciApp::createActions()
 {
-#define new_action(act, shortstr, longstr, keyseq, slot) \
-	act = new QAction(shortstr, this); \
+#define new_action(act, shortstr, longstr, keyseq, slot, icon) \
+	act = new QAction(icon, shortstr, this); \
 	act->setShortcuts(keyseq); \
 	act->setStatusTip(longstr); \
 	connect(act, SIGNAL(triggered()), this, SLOT(slot))
 
 	new_action(newAct,tr("&New"),
 			tr("Create a new file"), 
-			QKeySequence::New,newFile());
+			QKeySequence::New,newFile(),
+			QtIconLoader::icon("document-new"));
 	new_action(openAct, tr("&Open"),
 			tr("Open an existing file"),
-			QKeySequence::Open,open());
+			QKeySequence::Open,open(),
+			QtIconLoader::icon("document-open"));
 	new_action(saveAct,tr("&Save"),
 			tr("Save the current file"),
-			QKeySequence::Save,save());
+			QKeySequence::Save,save(),
+			QtIconLoader::icon("document-save"));
 	new_action(saveAsAct,tr("Save &As"),
 			tr("Save the current file with a new name"),
-			QKeySequence::SaveAs,saveAs());
+			QKeySequence::SaveAs,saveAs(),
+			QtIconLoader::icon("document-save-as"));
 }
 
 void QsciApp::createMenus()
