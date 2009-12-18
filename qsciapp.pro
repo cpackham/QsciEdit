@@ -6,8 +6,10 @@ CONFIG += qt
 QT += xml
 
 SOURCES = qsciapp.cpp \
+	qticonloader.cpp \
 	main.cpp
-HEADERS = qsciapp.h
+HEADERS = qsciapp.h \
+	qticonloader.h
 
 INCLUDEPATH += $${QSCI_HEADER_PATH}/Qsci
 
