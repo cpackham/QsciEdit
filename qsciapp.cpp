@@ -5,6 +5,9 @@
 #include "qticonloader.h"
 #include "lexersel.h"
 
+const QString APPLICATION_NAME = "QsciApp";
+const QString COMPANY_NAME = "cpp";
+
 QsciApp::QsciApp()
 {
 	textEdit = new QsciScintilla;
@@ -131,6 +134,14 @@ void QsciApp::createActions()
 	connect(textEdit, SIGNAL(copyAvailable(bool)),
 		copyAct, SLOT(setEnabled(bool)));
 
+	// Help actions
+	aboutAct = new QAction(QtIconLoader::icon("help-about"), "&About", this);
+	aboutAct->setStatusTip(tr("Information about %1").arg(APPLICATION_NAME)); 
+	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
+
+	aboutQtAct = new QAction(QtIconLoader::icon("help-about"), "About Qt", this);
+	aboutQtAct->setStatusTip(tr("Information about Qt")); 
+	connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
 
 void QsciApp::createMenus()
@@ -151,6 +162,11 @@ void QsciApp::createMenus()
 
 	viewMenu = menuBar()->addMenu(tr("&View"));
 	settingsMenu = menuBar()->addMenu(tr("&Settings"));
+
+	menuBar()->addSeparator();
+	helpMenu = menuBar()->addMenu(tr("&Help"));
+	helpMenu->addAction(aboutAct);
+	helpMenu->addAction(aboutQtAct);
 }
 
 void QsciApp::createToolBars()
@@ -218,11 +234,29 @@ void QsciApp::cut() { textEdit->cut(); };
 void QsciApp::copy() { textEdit->copy(); };
 void QsciApp::paste() { textEdit->paste(); };
 
+void QsciApp::about()
+{
+	QMessageBox::about(this, tr("About %1").arg(APPLICATION_NAME),
+			tr("<center>%1</center>"
+			   "<p>A simple programmers code editor, by a simple programmer.\n"
+			   "<p>%1 is licenced under the GPLv2 and makes use of "
+			   "the following LGPL components:\n"
+			   "<ul>\n"
+			   "<li> Qt C++ Toolkit <a href=\"%2\">%2</a>\n"
+			   "<li> QtIconloader <a href=\"%3\">%3</a>\n"
+			   "<li> QScintilla2 <a href=\"%4\">%4</a>\n"
+			   "</ul>\n")
+			   .arg(APPLICATION_NAME, 
+			   "http://qt.nokia.com/", 
+			   "http://code.google.com/p/qticonloader/",
+			   "http://www.riverbankcomputing.co.uk/software/qscintilla/"));
+}
+
 bool QsciApp::saveIfModified()
 {
 	if (textEdit->isModified()) {
 		QMessageBox::StandardButton ret;
-		ret = QMessageBox::warning(this, tr("QsciApp"),
+		ret = QMessageBox::warning(this, APPLICATION_NAME,
 				tr("This document has unsaved changes.\n"
 				   "Do you want to save the changes now?"),
 				QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -287,7 +321,7 @@ void QsciApp::setCurrentFile(const QString &fileName)
 	else
 		shownName = QFileInfo(curFile).fileName();
 
-	setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("QsciApp")));
+	setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(APPLICATION_NAME));
 	textEdit->setLexer(LexerSelector::getLexerForFile(fileName));
 	if (textEdit->lexer()) {
 		QFont font = QFont("Monospaced, Courier", 10);
@@ -298,7 +332,7 @@ void QsciApp::setCurrentFile(const QString &fileName)
 
 void QsciApp::loadSettings()
 {
-	QSettings settings("QsciApp", "QsciApp");
+	QSettings settings(COMPANY_NAME, APPLICATION_NAME);
 	QPoint pos = settings.value("pos", QPoint(0,0)).toPoint();
 	QSize size = settings.value("size", QSize(600,700)).toSize();
 	QString file = settings.value("file", "").toString();
@@ -310,7 +344,7 @@ void QsciApp::loadSettings()
 
 void QsciApp::saveSettings()
 {
-	QSettings settings("QsciApp", "QsciApp");
+	QSettings settings(COMPANY_NAME, APPLICATION_NAME);
 	settings.setValue("pos", pos());
 	settings.setValue("size", size());
 	settings.setValue("file", curFile);

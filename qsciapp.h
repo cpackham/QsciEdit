@@ -21,6 +21,7 @@ public slots:
 	void paste();
 	void undo();
 	void redo();
+	void about();
 
 protected:
 	void closeEvent(QCloseEvent *event);
@@ -50,6 +51,7 @@ private:
 	QMenu *editMenu;
 	QMenu *viewMenu;
 	QMenu *settingsMenu;
+	QMenu *helpMenu;
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
 
@@ -65,6 +67,8 @@ private:
 	QAction *copyAct;
 	QAction *pasteAct;
 
+	QAction *aboutAct;
+	QAction *aboutQtAct;
 
 };
 #endif
