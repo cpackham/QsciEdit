@@ -44,6 +44,7 @@ void QsciApp::createActions()
 	act->setStatusTip(longstr); \
 	connect(act, SIGNAL(triggered()), this, SLOT(slot))
 
+	// File actions
 	new_action(newAct,tr("&New"),
 			tr("Create a new file"), 
 			QKeySequence::New,newFile(),
@@ -60,6 +61,38 @@ void QsciApp::createActions()
 			tr("Save the current file with a new name"),
 			QKeySequence::SaveAs,saveAs(),
 			QtIconLoader::icon("document-save-as"));
+
+	// Edit actions
+	new_action(undoAct, tr("&Undo"),
+			tr("Undo last edit"),
+			QKeySequence::Undo,undo(),
+			QtIconLoader::icon("edit-undo"));
+	new_action(redoAct, tr("&Redo"),
+			tr("Redo last edit"),
+			QKeySequence::Redo,redo(),
+			QtIconLoader::icon("edit-redo"));
+	new_action(cutAct, tr("Cu&t"),
+			tr("Cut the selected text"),
+			QKeySequence::Cut,cut(),
+			QtIconLoader::icon("edit-cut"));
+	cutAct->setEnabled(false);
+
+	new_action(copyAct, tr("&Copy"),
+			tr("Copy the selected text to the clipboard"),
+			QKeySequence::Copy,copy(),
+			QtIconLoader::icon("edit-copy"));
+	copyAct->setEnabled(false);
+
+	new_action(pasteAct, tr("&Paste"),
+			tr("Paste text from the clipboard"),
+			QKeySequence::Paste,paste(),
+			QtIconLoader::icon("edit-paste"));
+
+	connect(textEdit, SIGNAL(copyAvailable(bool)),
+		cutAct, SLOT(setEnabled(bool)));
+	connect(textEdit, SIGNAL(copyAvailable(bool)),
+		copyAct, SLOT(setEnabled(bool)));
+
 }
 
 void QsciApp::createMenus()
@@ -71,6 +104,13 @@ void QsciApp::createMenus()
 	fileMenu->addAction(saveAsAct);
 
 	editMenu = menuBar()->addMenu(tr("&Edit"));
+	editMenu->addAction(undoAct);
+	editMenu->addAction(redoAct);
+	editMenu->addSeparator();
+	editMenu->addAction(cutAct);
+	editMenu->addAction(copyAct);
+	editMenu->addAction(pasteAct);
+
 	viewMenu = menuBar()->addMenu(tr("&View"));
 	settingsMenu = menuBar()->addMenu(tr("&Settings"));
 }
@@ -82,6 +122,15 @@ void QsciApp::createToolBars()
 	fileToolBar->addAction(openAct);
 	fileToolBar->addAction(saveAct);
 	fileToolBar->addAction(saveAsAct);
+	fileToolBar->addSeparator();
+
+	editToolBar = addToolBar(tr("Edit"));
+	editToolBar->addAction(undoAct);
+	editToolBar->addAction(redoAct);
+	editToolBar->addSeparator();
+	editToolBar->addAction(cutAct);
+	editToolBar->addAction(copyAct);
+	editToolBar->addAction(pasteAct);
 }
 
 void QsciApp::createStatusBar()
@@ -123,6 +172,12 @@ bool QsciApp::saveAs()
 
 	return saveFile(fileName);
 }
+
+void QsciApp::undo() { textEdit->undo(); };
+void QsciApp::redo() { textEdit->redo(); };
+void QsciApp::cut() { textEdit->cut(); };
+void QsciApp::copy() { textEdit->copy(); };
+void QsciApp::paste() { textEdit->paste(); };
 
 bool QsciApp::saveIfModified()
 {

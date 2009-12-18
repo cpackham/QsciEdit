@@ -16,6 +16,11 @@ public slots:
 	void open();
 	bool save();
 	bool saveAs();
+	void cut();
+	void copy();
+	void paste();
+	void undo();
+	void redo();
 
 protected:
 	void closeEvent(QCloseEvent *event);
@@ -40,12 +45,20 @@ private:
 	QMenu *viewMenu;
 	QMenu *settingsMenu;
 	QToolBar *fileToolBar;
+	QToolBar *editToolBar;
 
 	QAction *newAct;
 	QAction *openAct;
 	QAction *saveAct;
 	QAction *saveAsAct;
 	QAction *exitAct;
+
+	QAction *undoAct;
+	QAction *redoAct;
+	QAction *cutAct;
+	QAction *copyAct;
+	QAction *pasteAct;
+
 
 };
 #endif
