@@ -77,6 +77,38 @@ void QsciApp::documentModified(bool modified)
 	setWindowModified(modified);
 }
 
+void QsciApp::setFolding(bool enable)
+{
+	if (enable) {
+		textEdit->setFolding(QsciScintilla::PlainFoldStyle);
+	} else {
+		textEdit->setFolding(QsciScintilla::NoFoldStyle);
+	}
+}
+
+void QsciApp::setAutoCompletion(bool enable)
+{
+	if (enable) {
+		textEdit->setAutoCompletionSource(QsciScintilla::AcsAll);
+		textEdit->setAutoCompletionThreshold(3);
+	} else {
+		textEdit->setAutoCompletionSource(QsciScintilla::AcsNone);
+	}
+}
+
+void  QsciApp::setBraceMatching(bool enable)
+{
+	if (enable) {
+		textEdit->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+		textEdit->setMatchedBraceForegroundColor(QColor("white"));
+		textEdit->setMatchedBraceBackgroundColor(QColor("dodgerblue"));
+		textEdit->setUnmatchedBraceForegroundColor(QColor("black"));
+		textEdit->setUnmatchedBraceBackgroundColor(QColor("red"));
+	} else {
+		textEdit->setBraceMatching(QsciScintilla::NoBraceMatch);
+	}
+}
+
 void QsciApp::createActions()
 {
 #define new_action(act, shortstr, longstr, keyseq, slot, icon) \
@@ -134,6 +166,26 @@ void QsciApp::createActions()
 	connect(textEdit, SIGNAL(copyAvailable(bool)),
 		copyAct, SLOT(setEnabled(bool)));
 
+#define checkable_act(act, shortstr, longstr, slot, enable) \
+	act = new QAction(shortstr, this); \
+	act->setStatusTip(longstr); \
+	act->setCheckable(true); \
+	act->setChecked(enable); \
+	connect(act, SIGNAL(triggered(bool)), this, SLOT(slot))
+
+	foldAct = new QAction(tr("Folding"), this);
+	foldAct->setStatusTip(tr("Enable/disable code folding"));
+	foldAct->setCheckable(true);
+	foldAct->setChecked(false);
+	connect(foldAct, SIGNAL(triggered(bool)), this, SLOT(setFolding(bool)));
+
+	checkable_act(autoCompAct, tr("Auto completion"),
+		tr("Enable/disable auto completion"),
+		setAutoCompletion(bool),false);
+	checkable_act(braceMatchAct, tr("Brace Matching"),
+		tr("Enable/disable brace matching"),
+		setBraceMatching(bool), false);
+	
 	// Help actions
 	aboutAct = new QAction(QtIconLoader::icon("help-about"), "&About", this);
 	aboutAct->setStatusTip(tr("Information about %1").arg(APPLICATION_NAME)); 
@@ -162,6 +214,9 @@ void QsciApp::createMenus()
 
 	viewMenu = menuBar()->addMenu(tr("&View"));
 	settingsMenu = menuBar()->addMenu(tr("&Settings"));
+	settingsMenu->addAction(foldAct);
+	settingsMenu->addAction(autoCompAct);
+	settingsMenu->addAction(braceMatchAct);
 
 	menuBar()->addSeparator();
 	helpMenu = menuBar()->addMenu(tr("&Help"));

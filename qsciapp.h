@@ -32,6 +32,9 @@ protected:
 
 private slots:
 	void documentModified(bool);
+	void setFolding(bool);
+	void setAutoCompletion(bool);
+	void setBraceMatching(bool);
 
 private:
 	void createActions();
@@ -66,6 +69,10 @@ private:
 	QAction *cutAct;
 	QAction *copyAct;
 	QAction *pasteAct;
+
+	QAction *foldAct;
+	QAction *autoCompAct;
+	QAction *braceMatchAct;
 
 	QAction *aboutAct;
 	QAction *aboutQtAct;
