@@ -19,3 +19,5 @@ INCLUDEPATH += $${QSCI_HEADER_PATH}/Qsci
 
 LIBS += -L$${QSCI_LIB_PATH}/Qsci \
 	-lqscintilla2
+
+TARGET = qsciedit

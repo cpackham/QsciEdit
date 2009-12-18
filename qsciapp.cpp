@@ -5,7 +5,7 @@
 #include "qticonloader.h"
 #include "lexersel.h"
 
-const QString APPLICATION_NAME = "QsciApp";
+const QString APPLICATION_NAME = "QsciEdit";
 const QString COMPANY_NAME = "cpp";
 
 QsciApp::QsciApp(const QString fileName)
