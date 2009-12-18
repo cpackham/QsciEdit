@@ -26,7 +26,7 @@ protected:
 	void closeEvent(QCloseEvent *event);
 
 private slots:
-	void documentWasModified();
+	void documentModified(bool);
 
 private:
 	void createActions();

@@ -14,8 +14,8 @@ QsciApp::QsciApp()
 	createToolBars();
 	createStatusBar();
 
-	connect(textEdit, SIGNAL(textChanged()),
-		this, SLOT(documentWasModified()));
+	connect(textEdit, SIGNAL(modificationChanged(bool)),
+		this, SLOT(documentModified(bool)));
 
 	setCentralWidget(textEdit);
 	setCurrentFile("");
@@ -32,9 +32,9 @@ void QsciApp::closeEvent(QCloseEvent *event)
 	}
 }
 
-void QsciApp::documentWasModified()
+void QsciApp::documentModified(bool modified)
 {
-	setWindowModified(textEdit->isModified());
+	setWindowModified(modified);
 }
 
 void QsciApp::createActions()
