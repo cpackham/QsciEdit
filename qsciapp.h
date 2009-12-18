@@ -27,6 +27,7 @@ private:
 	void createActions();
 	void createMenus();
 	void createToolBars();
+	void createStatusBar();
 	void loadFile(const QString &filename);
 	bool saveFile(const QString &filename);
 	void setCurrentFile(const QString &filename);

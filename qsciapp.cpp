@@ -1,4 +1,3 @@
-#include <iostream>
 #include <QtGui>
 #include <qsciscintilla.h>
 #include <qscilexercpp.h>
@@ -13,6 +12,7 @@ QsciApp::QsciApp()
 	createActions();
 	createMenus();
 	createToolBars();
+	createStatusBar();
 
 	connect(textEdit, SIGNAL(textChanged()),
 		this, SLOT(documentWasModified()));
@@ -37,24 +37,22 @@ void QsciApp::documentWasModified()
 
 void QsciApp::createActions()
 {
-#define DECLARE_ACTION(act, shortstr, longstr, keyseq, slot) \
+#define new_action(act, shortstr, longstr, keyseq, slot) \
 	act = new QAction(shortstr, this); \
 	act->setShortcuts(keyseq); \
 	act->setStatusTip(longstr); \
 	connect(act, SIGNAL(triggered()), this, SLOT(slot))
 
-	newAct = new QAction(tr("&New"), this);
-	newAct->setShortcuts(QKeySequence::New);
-	newAct->setStatusTip(tr("Create a new file"));
-	connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
-
-	DECLARE_ACTION(openAct, tr("&Open"),
+	new_action(newAct,tr("&New"),
+			tr("Create a new file"), 
+			QKeySequence::New,newFile());
+	new_action(openAct, tr("&Open"),
 			tr("Open an existing file"),
 			QKeySequence::Open,open());
-	DECLARE_ACTION(saveAct,tr("&Save"),
+	new_action(saveAct,tr("&Save"),
 			tr("Save the current file"),
 			QKeySequence::Save,save());
-	DECLARE_ACTION(saveAsAct,tr("Save &As"),
+	new_action(saveAsAct,tr("Save &As"),
 			tr("Save the current file with a new name"),
 			QKeySequence::SaveAs,saveAs());
 }
@@ -79,6 +77,11 @@ void QsciApp::createToolBars()
 	fileToolBar->addAction(openAct);
 	fileToolBar->addAction(saveAct);
 	fileToolBar->addAction(saveAsAct);
+}
+
+void QsciApp::createStatusBar()
+{
+	statusBar()->showMessage(tr("Ready"));
 }
 
 void QsciApp::newFile()
@@ -114,21 +117,22 @@ bool QsciApp::saveAs()
 
 void QsciApp::loadFile(const QString &fileName)
 {
-     QFile file(fileName);
-     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-         QMessageBox::warning(this, tr("Application"),
-                              tr("Cannot read file %1:\n%2.")
-                              .arg(fileName)
-                              .arg(file.errorString()));
-         return;
-     }
+	QFile file(fileName);
+	if (!file.open(QFile::ReadOnly | QFile::Text)) {
+		QMessageBox::warning(this, tr("Application"),
+			tr("Cannot read file %1:\n%2.")
+			.arg(fileName)
+			.arg(file.errorString()));
+		return;
+	}
 
-     QTextStream in(&file);
-     QApplication::setOverrideCursor(Qt::WaitCursor);
-     textEdit->setText(in.readAll());
-     QApplication::restoreOverrideCursor();
+	QTextStream in(&file);
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+	textEdit->setText(in.readAll());
+	QApplication::restoreOverrideCursor();
 
-     setCurrentFile(fileName);
+	setCurrentFile(fileName);
+	statusBar()->showMessage(tr("File %1 loaded").arg(fileName));
 }
 
 bool QsciApp::saveFile(const QString &fileName)
@@ -148,6 +152,7 @@ bool QsciApp::saveFile(const QString &fileName)
 	QApplication::restoreOverrideCursor();
 
 	setCurrentFile(fileName);
+	statusBar()->showMessage(tr("File %1 saved").arg(fileName));
 	return true;
 }
 
