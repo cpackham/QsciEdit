@@ -1,5 +1,6 @@
 #include <QtGui>
 #include <qsciscintilla.h>
+#include <qscilexer.h>
 #include "qsciapp.h"
 #include "qticonloader.h"
 #include "lexersel.h"
@@ -248,4 +249,9 @@ void QsciApp::setCurrentFile(const QString &fileName)
 
 	setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("QsciApp")));
 	textEdit->setLexer(LexerSelector::getLexerForFile(fileName));
+	if (textEdit->lexer()) {
+		QFont font = QFont("Monospaced, Courier", 10);
+		textEdit->lexer()->setDefaultFont(font);
+		textEdit->lexer()->setFont(font);
+	}
 }
