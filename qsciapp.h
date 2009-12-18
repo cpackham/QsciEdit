@@ -11,11 +11,40 @@ class QsciApp : public QMainWindow
 public:
 	QsciApp();
 
+public slots:
+	void newFile();
+	void open();
+	bool save();
+	bool saveAs();
+
+protected:
+	void closeEvent(QCloseEvent *event);
+
 private slots:
 	void documentWasModified();
 
 private:
+	void createActions();
+	void createMenus();
+	void createToolBars();
+	void loadFile(const QString &filename);
+	bool saveFile(const QString &filename);
+	void setCurrentFile(const QString &filename);
+
 	QsciScintilla *textEdit;
+	QString curFile;
+	QMenu *fileMenu;
+	QMenu *editMenu;
+	QMenu *viewMenu;
+	QMenu *settingsMenu;
+	QToolBar *fileToolBar;
+
+	QAction *newAct;
+	QAction *openAct;
+	QAction *saveAct;
+	QAction *saveAsAct;
+	QAction *exitAct;
+
 };
 #endif
 
