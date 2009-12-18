@@ -24,7 +24,7 @@ QsciApp::QsciApp()
 
 void QsciApp::closeEvent(QCloseEvent *event)
 {
-	if (1) {
+	if (saveIfModified()) {
 		event->accept();
 	} else {
 		event->ignore();
@@ -91,14 +91,18 @@ void QsciApp::createStatusBar()
 
 void QsciApp::newFile()
 {
-	textEdit->setText("");
+	if (saveIfModified()) {
+		textEdit->setText("");
+	}
 }
 
 void QsciApp::open()
 {
-	QString fileName = QFileDialog::getOpenFileName(this);
-	if (!fileName.isEmpty()) {
-		loadFile(fileName);
+	if (saveIfModified()) {
+		QString fileName = QFileDialog::getOpenFileName(this);
+		if (!fileName.isEmpty()) {
+			loadFile(fileName);
+		}
 	}
 }
 
@@ -118,6 +122,22 @@ bool QsciApp::saveAs()
 		return false;
 
 	return saveFile(fileName);
+}
+
+bool QsciApp::saveIfModified()
+{
+	if (textEdit->isModified()) {
+		QMessageBox::StandardButton ret;
+		ret = QMessageBox::warning(this, tr("QsciApp"),
+				tr("This document has unsaved changes.\n"
+				   "Do you want to save the changes now?"),
+				QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+		if (ret == QMessageBox::Save)
+			return save();
+		else if (ret == QMessageBox::Cancel)
+			return false;
+	}
+	return true;
 }
 
 void QsciApp::loadFile(const QString &fileName)
