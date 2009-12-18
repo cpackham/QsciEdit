@@ -19,11 +19,13 @@ QsciApp::QsciApp()
 
 	setCentralWidget(textEdit);
 	setCurrentFile("");
+	loadSettings();
 }
 
 void QsciApp::closeEvent(QCloseEvent *event)
 {
 	if (saveIfModified()) {
+		saveSettings();
 		event->accept();
 	} else {
 		event->ignore();
@@ -141,6 +143,7 @@ void QsciApp::newFile()
 {
 	if (saveIfModified()) {
 		textEdit->setText("");
+		setCurrentFile("");
 	}
 }
 
@@ -254,4 +257,24 @@ void QsciApp::setCurrentFile(const QString &fileName)
 		textEdit->lexer()->setDefaultFont(font);
 		textEdit->lexer()->setFont(font);
 	}
+}
+
+void QsciApp::loadSettings()
+{
+	QSettings settings("QsciApp", "QsciApp");
+	QPoint pos = settings.value("pos", QPoint(0,0)).toPoint();
+	QSize size = settings.value("size", QSize(600,700)).toSize();
+	QString file = settings.value("file", "").toString();
+	move (pos);
+	resize(size);
+	if (!file.isEmpty())
+		loadFile(file);
+}
+
+void QsciApp::saveSettings()
+{
+	QSettings settings("QsciApp", "QsciApp");
+	settings.setValue("pos", pos());
+	settings.setValue("size", size());
+	settings.setValue("file", curFile);
 }

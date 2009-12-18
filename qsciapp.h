@@ -37,6 +37,8 @@ private:
 	bool saveFile(const QString &filename);
 	void setCurrentFile(const QString &filename);
 	bool saveIfModified();
+	void loadSettings();
+	void saveSettings();
 
 	QsciScintilla *textEdit;
 	QString curFile;
