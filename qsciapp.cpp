@@ -13,12 +13,17 @@ QsciApp::QsciApp()
 	createMenus();
 	createToolBars();
 	createStatusBar();
+	setAcceptDrops(true);
+	setCentralWidget(textEdit);
+	setCurrentFile("");
 
+	// The QsciScintilla drag & drop behaviour is to put the URL in as text
+	// in the current document. We want it to open the file url so disable
+	// the QsciScintilla behaviour.
+	textEdit->setAcceptDrops(false);
 	connect(textEdit, SIGNAL(modificationChanged(bool)),
 		this, SLOT(documentModified(bool)));
 
-	setCentralWidget(textEdit);
-	setCurrentFile("");
 	loadSettings();
 }
 
@@ -29,6 +34,38 @@ void QsciApp::closeEvent(QCloseEvent *event)
 		event->accept();
 	} else {
 		event->ignore();
+	}
+}
+
+void QsciApp::dragEnterEvent(QDragEnterEvent *event)
+{
+	event->acceptProposedAction();
+}
+
+void QsciApp::dragMoveEvent(QDragMoveEvent *event)
+{
+	event->acceptProposedAction();
+}
+
+void QsciApp::dragLeaveEvent(QDragLeaveEvent *event)
+{
+	event->accept();
+}
+
+void QsciApp::dropEvent(QDropEvent *event)
+{
+	const QMimeData *mimeData = event->mimeData();
+	if (mimeData->hasUrls()) {
+		QList<QUrl> urlList = mimeData->urls();
+
+		// Until multi document support is added we could either reject
+		// multiple URLS or only handle the first URL in a list. We've
+		// opted for the latter.
+		QString url = urlList.at(0).path();
+		if (!url.isEmpty() && saveIfModified()) {
+			loadFile(url);
+		}
+		event->acceptProposedAction();
 	}
 }
 
