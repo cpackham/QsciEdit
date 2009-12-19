@@ -32,6 +32,7 @@ protected:
 
 private slots:
 	void documentModified(bool);
+	void setLineNumbers(bool);
 	void setFolding(bool);
 	void setAutoCompletion(bool);
 	void setBraceMatching(bool);
@@ -52,6 +53,7 @@ private:
 	QString curFile;
 	QMenu *fileMenu;
 	QMenu *editMenu;
+	QMenu *viewMenu;
 	QMenu *settingsMenu;
 	QMenu *helpMenu;
 	QToolBar *fileToolBar;
@@ -68,6 +70,8 @@ private:
 	QAction *cutAct;
 	QAction *copyAct;
 	QAction *pasteAct;
+
+	QAction *lineNumAct;
 
 	QAction *foldAct;
 	QAction *autoCompAct;

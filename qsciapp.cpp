@@ -7,6 +7,7 @@
 
 const QString APPLICATION_NAME = "QsciEdit";
 const QString COMPANY_NAME = "cpp";
+const int LINE_NUM_MARGIN = 1;
 
 QsciApp::QsciApp(const QString fileName)
 {
@@ -78,6 +79,16 @@ void QsciApp::dropEvent(QDropEvent *event)
 void QsciApp::documentModified(bool modified)
 {
 	setWindowModified(modified);
+}
+
+void QsciApp::setLineNumbers(bool enable)
+{
+	textEdit->setMarginLineNumbers(LINE_NUM_MARGIN, enable);
+	if (enable) {
+		textEdit->setMarginWidth(LINE_NUM_MARGIN, 50);
+	} else {
+		textEdit->setMarginWidth(LINE_NUM_MARGIN, 0);
+	}
 }
 
 void QsciApp::setFolding(bool enable)
@@ -176,6 +187,13 @@ void QsciApp::createActions()
 	act->setChecked(enable); \
 	connect(act, SIGNAL(triggered(bool)), this, SLOT(slot))
 
+	// View
+	checkable_act(lineNumAct, tr("Line Numbers"),
+		tr("Display line numbers in the margin"),
+		setLineNumbers(bool),
+		textEdit->marginLineNumbers(LINE_NUM_MARGIN));
+	
+	// Settings
 	checkable_act(foldAct, tr("Folding"), 
 		tr("Enable/disable code folding"),
 		setFolding(bool),
@@ -214,6 +232,9 @@ void QsciApp::createMenus()
 	editMenu->addAction(cutAct);
 	editMenu->addAction(copyAct);
 	editMenu->addAction(pasteAct);
+
+	viewMenu = menuBar()->addMenu(tr("&View"));
+	viewMenu->addAction(lineNumAct);
 
 	settingsMenu = menuBar()->addMenu(tr("&Settings"));
 	settingsMenu->addAction(foldAct);
@@ -385,6 +406,7 @@ void QsciApp::loadSettings()
 	QSize size = settings.value("size", QSize(600,700)).toSize();
 	QString file = settings.value("file", "").toString();
 	settings.beginGroup("editor settings");
+	bool linenumbers = settings.value("line numbers",false).toBool();
 	bool folding = settings.value("folding", false).toBool();
 	bool autocomplete = settings.value("auto completion", false).toBool();
 	bool bracematch = settings.value("brace matching", false).toBool();
@@ -394,6 +416,7 @@ void QsciApp::loadSettings()
 	resize(size);
 	if (curFile.isEmpty() && !file.isEmpty())
 		loadFile(file);
+	setLineNumbers(linenumbers);
 	setFolding(folding);
 	setAutoCompletion(autocomplete);
 	setBraceMatching(bracematch);
@@ -406,6 +429,7 @@ void QsciApp::saveSettings()
 	settings.setValue("size", size());
 	settings.setValue("file", curFile);
 	settings.beginGroup("editor settings");
+	settings.setValue("line numbers", textEdit->marginLineNumbers(LINE_NUM_MARGIN));
 	settings.setValue("folding", textEdit->folding() != QsciScintilla::NoFoldStyle);
 	settings.setValue("brace matching", textEdit->braceMatching() != QsciScintilla::NoBraceMatch);
 	settings.setValue("auto completion", textEdit->autoCompletionSource() != QsciScintilla::AcsNone);
