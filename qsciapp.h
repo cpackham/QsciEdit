@@ -22,6 +22,7 @@ public slots:
 	void undo();
 	void redo();
 	void about();
+	void gotoLine(int);
 
 protected:
 	void closeEvent(QCloseEvent *event);
@@ -37,6 +38,7 @@ private slots:
 	void setFolding(bool);
 	void setAutoCompletion(bool);
 	void setBraceMatching(bool);
+	void askForLine();
 
 private:
 	void createActions();
@@ -71,6 +73,7 @@ private:
 	QAction *cutAct;
 	QAction *copyAct;
 	QAction *pasteAct;
+	QAction *gotoLineAct;
 
 	QAction *lineNumAct;
 	QAction *whiteSpaceAct;

@@ -131,6 +131,24 @@ void  QsciApp::setBraceMatching(bool enable)
 	}
 }
 
+void QsciApp::askForLine()
+{
+	int line, index;
+	textEdit->getCursorPosition(&line, &index);
+	line++;
+	QInputDialog dlg(this);
+	dlg.setWindowTitle(tr("Goto"));
+	dlg.setLabelText(tr("Line Number"));
+	dlg.setInputMode(QInputDialog::IntInput);
+	dlg.setIntMinimum(1);
+	dlg.setIntMaximum(textEdit->lines());
+	dlg.setIntValue(line);
+	if (dlg.exec() == QDialog::Accepted) {
+		statusBar()->showMessage(tr("goto %1").arg(dlg.intValue()));
+		gotoLine(dlg.intValue());
+	}
+}
+
 void QsciApp::createActions()
 {
 #define new_action(act, shortstr, longstr, keyseq, slot, icon) \
@@ -182,6 +200,12 @@ void QsciApp::createActions()
 			tr("Paste text from the clipboard"),
 			QKeySequence::Paste,paste(),
 			QtIconLoader::icon("edit-paste"));
+
+	gotoLineAct = new QAction(tr("&Goto Line"), this);
+	gotoLineAct->setStatusTip(tr("Jump to a line number"));
+	gotoLineAct->setShortcut(tr("Ctrl+G"));
+
+	connect(gotoLineAct, SIGNAL(triggered()), this, SLOT(askForLine()));
 
 	connect(textEdit, SIGNAL(copyAvailable(bool)),
 		cutAct, SLOT(setEnabled(bool)));
@@ -244,6 +268,8 @@ void QsciApp::createMenus()
 	editMenu->addAction(cutAct);
 	editMenu->addAction(copyAct);
 	editMenu->addAction(pasteAct);
+	editMenu->addSeparator();
+	editMenu->addAction(gotoLineAct);
 
 	viewMenu = menuBar()->addMenu(tr("&View"));
 	viewMenu->addAction(lineNumAct);
@@ -332,6 +358,13 @@ void QsciApp::about()
 		QTextStream in(&file);
 		QMessageBox::about(this, tr("About %1").arg(APPLICATION_NAME), in.readAll());
 	}
+}
+
+void QsciApp::gotoLine(int line)
+{
+	textEdit->setCursorPosition(line-1, 0);
+	textEdit->ensureCursorVisible ();
+	textEdit->ensureLineVisible (line+9);
 }
 
 bool QsciApp::saveIfModified()
