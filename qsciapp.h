@@ -33,6 +33,7 @@ protected:
 private slots:
 	void documentModified(bool);
 	void setLineNumbers(bool);
+	void setWhiteSpaceVis(bool);
 	void setFolding(bool);
 	void setAutoCompletion(bool);
 	void setBraceMatching(bool);
@@ -72,6 +73,7 @@ private:
 	QAction *pasteAct;
 
 	QAction *lineNumAct;
+	QAction *whiteSpaceAct;
 
 	QAction *foldAct;
 	QAction *autoCompAct;
