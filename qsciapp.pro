@@ -2,6 +2,7 @@ QSCI_HEADER_PATH = /usr/include/
 QSCI_LIB_PATH = /usr/lib
 
 TEMPLATE = app
+TARGET = qsciedit
 CONFIG += qt
 QT += xml
 
@@ -19,5 +20,3 @@ INCLUDEPATH += $${QSCI_HEADER_PATH}/Qsci
 
 LIBS += -L$${QSCI_LIB_PATH}/Qsci \
 	-lqscintilla2
-
-TARGET = qsciedit

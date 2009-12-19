@@ -1,10 +1,8 @@
-#include <iostream>
 #include <QtGui>
 #include "qsciapp.h"
 
 int main(int argc, char *argv[])
 {
-	std::cout << __FUNCTION__<< std::endl;
 	QString fileName = "";
 
 	// Let Qt have first dibs on the command line arguments
