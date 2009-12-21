@@ -264,11 +264,11 @@ void QsciApp::createActions()
 		setFolding(bool),
 		textEdit->folding() != QsciScintilla::NoFoldStyle);
 	checkable_act(autoCompAct, tr("Auto completion"),
-		tr("Enable/disable auto completion"),
+		tr("Suggest completions for the current text"),
 		setAutoCompletion(bool),
 		textEdit->autoCompletionSource() != QsciScintilla::AcsNone);
 	checkable_act(braceMatchAct, tr("Brace Matching"),
-		tr("Enable/disable brace matching"),
+		tr("Highlight matching pairs of braces"),
 		setBraceMatching(bool), 
 		textEdit->braceMatching() != QsciScintilla::NoBraceMatch);
 	
