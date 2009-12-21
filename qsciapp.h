@@ -90,6 +90,8 @@ private:
 	QAction *copyAct;
 	QAction *pasteAct;
 	QAction *gotoLineAct;
+	QAction *gotoBraceAct;
+	QAction *selectBraceAct;
 	QAction *findAct;
 	QAction *findPrevAct;
 	QAction *findNextAct;

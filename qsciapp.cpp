@@ -207,8 +207,17 @@ void QsciApp::createActions()
 	gotoLineAct = new QAction(tr("&Goto Line"), this);
 	gotoLineAct->setStatusTip(tr("Jump to a line number"));
 	gotoLineAct->setShortcut(tr("Ctrl+G"));
-
 	connect(gotoLineAct, SIGNAL(triggered()), this, SLOT(askForLine()));
+
+	gotoBraceAct = new QAction(tr("Goto matching brace"), this);
+	gotoBraceAct->setStatusTip(tr("Jump to the matching brace"));
+	gotoBraceAct->setShortcut(tr("Ctrl+E"));
+	connect(gotoBraceAct, SIGNAL(triggered()), textEdit, SLOT(moveToMatchingBrace()));
+
+	selectBraceAct = new QAction(tr("Select matching brace"), this);
+	selectBraceAct->setStatusTip(tr("Select to matching brace"));
+	selectBraceAct->setShortcut(tr("Ctrl+Shift+E"));
+	connect(selectBraceAct, SIGNAL(triggered()), textEdit, SLOT(selectToMatchingBrace()));
 
 	findAct = new QAction(QtIconLoader::icon("edit-find"), tr("&Find..."), this);
 	findAct->setStatusTip(tr("Search for text"));
@@ -293,6 +302,8 @@ void QsciApp::createMenus()
 	editMenu->addAction(findNextAct);
 	editMenu->addAction(findPrevAct);
 	editMenu->addAction(gotoLineAct);
+	editMenu->addAction(gotoBraceAct);
+	editMenu->addAction(selectBraceAct);
 
 	viewMenu = menuBar()->addMenu(tr("&View"));
 	viewMenu->addAction(lineNumAct);
