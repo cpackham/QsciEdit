@@ -9,10 +9,12 @@ QT += xml
 SOURCES = qsciapp.cpp \
 	qticonloader.cpp \
 	lexersel.cpp \
+	finddialog.cpp \
 	main.cpp
 HEADERS = qsciapp.h \
 	qticonloader.h \
-	lexersel.h
+	lexersel.h \
+	finddialog.h
 
 RESOURCES = qsciapp.qrc
 

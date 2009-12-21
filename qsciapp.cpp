@@ -4,6 +4,7 @@
 #include "qsciapp.h"
 #include "qticonloader.h"
 #include "lexersel.h"
+#include "finddialog.h"
 
 const QString APPLICATION_NAME = "QsciEdit";
 const QString COMPANY_NAME = "cpp";
@@ -12,6 +13,7 @@ const int LINE_NUM_MARGIN = 1;
 QsciApp::QsciApp(const QString fileName)
 {
 	textEdit = new QsciScintilla;
+	findDialog = NULL;
 
 	// Order here is important
 	setCurrentFile("");
@@ -207,6 +209,17 @@ void QsciApp::createActions()
 
 	connect(gotoLineAct, SIGNAL(triggered()), this, SLOT(askForLine()));
 
+	findAct = new QAction(tr("&Find..."), this);
+	findAct->setStatusTip(tr("Search for text"));
+	findAct->setShortcuts(QKeySequence::Find);
+	connect(findAct, SIGNAL(triggered()), this, SLOT(find()));
+
+	findNextAct = new QAction(tr("Find &Next"), this);
+	findNextAct->setStatusTip(tr("Repeat the last search"));
+	findNextAct->setShortcuts(QKeySequence::FindNext);
+	connect(findNextAct, SIGNAL(triggered()), this, SLOT(findNext()));
+	findNextAct->setEnabled(false);
+
 	connect(textEdit, SIGNAL(copyAvailable(bool)),
 		cutAct, SLOT(setEnabled(bool)));
 	connect(textEdit, SIGNAL(copyAvailable(bool)),
@@ -269,6 +282,8 @@ void QsciApp::createMenus()
 	editMenu->addAction(copyAct);
 	editMenu->addAction(pasteAct);
 	editMenu->addSeparator();
+	editMenu->addAction(findAct);
+	editMenu->addAction(findNextAct);
 	editMenu->addAction(gotoLineAct);
 
 	viewMenu = menuBar()->addMenu(tr("&View"));
@@ -365,6 +380,44 @@ void QsciApp::gotoLine(int line)
 	textEdit->setCursorPosition(line-1, 0);
 	textEdit->ensureCursorVisible ();
 	textEdit->ensureLineVisible (line+9);
+}
+
+void QsciApp::find()
+{
+	if (!findDialog) {
+		findDialog = new FindDialog(this);
+		connect(findDialog,
+			SIGNAL(findText(const QString, bool, bool, bool, bool, bool)), this,
+			SLOT(findText(const QString, bool, bool, bool, bool, bool)));
+	}
+	if (textEdit->hasSelectedText()) {
+		findDialog->setSearchText(textEdit->selectedText());
+	}
+	findDialog->raise();
+	findDialog->show();
+	findDialog->activateWindow();
+}
+
+void QsciApp::findNext()
+{
+	bool found = textEdit->findNext();
+	if (!found)
+		statusBar()->showMessage(tr("No match"));
+	else
+		statusBar()->showMessage("");
+}
+
+void QsciApp::findText(const QString text, bool regex, bool caseSensitive,
+		bool wholeWord, bool wrap, bool backwards)
+{
+	bool found = textEdit->findFirst(text, regex, caseSensitive, 
+			wholeWord, wrap, !backwards);
+	if (!found)
+		statusBar()->showMessage(tr("No match"));
+	else
+		statusBar()->showMessage("");
+
+	findNextAct->setEnabled(true);
 }
 
 bool QsciApp::saveIfModified()

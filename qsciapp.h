@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 class QsciScintilla;
+class FindDialog;
 
 class QsciApp : public QMainWindow
 {
@@ -21,6 +22,8 @@ public slots:
 	void paste();
 	void undo();
 	void redo();
+	void find();
+	void findNext();
 	void about();
 	void gotoLine(int);
 
@@ -39,6 +42,8 @@ private slots:
 	void setAutoCompletion(bool);
 	void setBraceMatching(bool);
 	void askForLine();
+	void findText(const QString text, bool regex, bool caseSensitive,
+		bool wholeWord, bool wrap, bool backwards);
 
 private:
 	void createActions();
@@ -61,6 +66,7 @@ private:
 	QMenu *helpMenu;
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
+	FindDialog *findDialog;
 
 	QAction *newAct;
 	QAction *openAct;
@@ -74,6 +80,8 @@ private:
 	QAction *copyAct;
 	QAction *pasteAct;
 	QAction *gotoLineAct;
+	QAction *findAct;
+	QAction *findNextAct;
 
 	QAction *lineNumAct;
 	QAction *whiteSpaceAct;
