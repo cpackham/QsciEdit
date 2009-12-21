@@ -257,6 +257,10 @@ void QsciApp::createActions()
 		tr("Make white space visible"),
 		setWhiteSpaceVis(bool),
 		textEdit->whitespaceVisibility() != QsciScintilla::WsInvisible);
+	checkable_act(wrapTextAct, tr("Wrap Text"),
+		tr("Wrap text"),
+		setWrapText(bool),
+		textEdit->wrapMode() != QsciScintilla::WrapNone);
 	
 	// Settings
 	checkable_act(foldAct, tr("Folding"), 
@@ -308,6 +312,7 @@ void QsciApp::createMenus()
 	viewMenu = menuBar()->addMenu(tr("&View"));
 	viewMenu->addAction(lineNumAct);
 	viewMenu->addAction(whiteSpaceAct);
+	viewMenu->addAction(wrapTextAct);
 
 	settingsMenu = menuBar()->addMenu(tr("&Settings"));
 	settingsMenu->addAction(foldAct);
@@ -475,6 +480,15 @@ void QsciApp::clearSearchDir()
 	lastSearchDir = QsciApp::DirNone;
 }
 
+void QsciApp::setWrapText(bool enabled)
+{
+	if (enabled) {
+		textEdit->setWrapMode(QsciScintilla::WrapWord);
+	} else {
+		textEdit->setWrapMode(QsciScintilla::WrapNone);
+	}
+}
+
 bool QsciApp::saveIfModified()
 {
 	if (textEdit->isModified()) {
@@ -562,6 +576,7 @@ void QsciApp::loadSettings()
 	settings.beginGroup("editor settings");
 	bool linenumbers = settings.value("line numbers",false).toBool();
 	bool whitespace = settings.value("whitespace", false).toBool();
+	bool wraptext = settings.value("wrap text", false).toBool();
 	bool folding = settings.value("folding", false).toBool();
 	bool autocomplete = settings.value("auto completion", false).toBool();
 	bool bracematch = settings.value("brace matching", false).toBool();
@@ -576,6 +591,7 @@ void QsciApp::loadSettings()
 	setFolding(folding);
 	setAutoCompletion(autocomplete);
 	setBraceMatching(bracematch);
+	setWrapText(wraptext);
 }
 
 void QsciApp::saveSettings()
@@ -587,6 +603,8 @@ void QsciApp::saveSettings()
 	settings.beginGroup("editor settings");
 	settings.setValue("line numbers", textEdit->marginLineNumbers(LINE_NUM_MARGIN));
 	settings.setValue("whitespace", textEdit->whitespaceVisibility() != QsciScintilla::WsInvisible);
+	settings.setValue("wrap text", textEdit->wrapMode() != QsciScintilla::WrapNone);
+
 	settings.setValue("folding", textEdit->folding() != QsciScintilla::NoFoldStyle);
 	settings.setValue("brace matching", textEdit->braceMatching() != QsciScintilla::NoBraceMatch);
 	settings.setValue("auto completion", textEdit->autoCompletionSource() != QsciScintilla::AcsNone);

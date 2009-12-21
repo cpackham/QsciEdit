@@ -52,6 +52,7 @@ private slots:
 	void setBraceMatching(bool);
 	void askForLine();
 	void clearSearchDir();
+	void setWrapText(bool);
 
 private:
 	void createActions();
@@ -98,6 +99,7 @@ private:
 
 	QAction *lineNumAct;
 	QAction *whiteSpaceAct;
+	QAction *wrapTextAct;
 
 	QAction *foldAct;
 	QAction *autoCompAct;
