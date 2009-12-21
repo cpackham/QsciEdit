@@ -2,12 +2,19 @@
 #define QSCIAPP_H
 
 #include <QMainWindow>
+class QLineEdit;
 class QsciScintilla;
 class FindDialog;
 
 class QsciApp : public QMainWindow
 {
 	Q_OBJECT
+
+	enum Dir {
+		DirNone = 0,
+		DirForwards,
+		DirBackwards
+	};
 
 public:
 	QsciApp(const QString = 0);
@@ -23,7 +30,9 @@ public slots:
 	void undo();
 	void redo();
 	void find();
+	void findText(bool);
 	void findNext();
+	void findPrev();
 	void about();
 	void gotoLine(int);
 
@@ -42,8 +51,7 @@ private slots:
 	void setAutoCompletion(bool);
 	void setBraceMatching(bool);
 	void askForLine();
-	void findText(const QString text, bool regex, bool caseSensitive,
-		bool wholeWord, bool wrap, bool backwards);
+	void clearSearchDir();
 
 private:
 	void createActions();
@@ -66,6 +74,8 @@ private:
 	QMenu *helpMenu;
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
+	QToolBar *findToolBar;
+	QLineEdit *findEntry;
 	FindDialog *findDialog;
 
 	QAction *newAct;
@@ -81,6 +91,7 @@ private:
 	QAction *pasteAct;
 	QAction *gotoLineAct;
 	QAction *findAct;
+	QAction *findPrevAct;
 	QAction *findNextAct;
 
 	QAction *lineNumAct;
@@ -92,6 +103,8 @@ private:
 
 	QAction *aboutAct;
 	QAction *aboutQtAct;
+
+	enum Dir lastSearchDir;
 
 };
 #endif

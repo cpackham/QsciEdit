@@ -26,6 +26,7 @@ QsciApp::QsciApp(const QString fileName)
 	createStatusBar();
 	setAcceptDrops(true);
 	setCentralWidget(textEdit);
+	clearSearchDir();
 
 	// The QsciScintilla drag & drop behaviour is to put the URL in as text
 	// in the current document. We want it to open the file url so disable
@@ -209,16 +210,22 @@ void QsciApp::createActions()
 
 	connect(gotoLineAct, SIGNAL(triggered()), this, SLOT(askForLine()));
 
-	findAct = new QAction(tr("&Find..."), this);
+	findAct = new QAction(QtIconLoader::icon("edit-find"), tr("&Find..."), this);
 	findAct->setStatusTip(tr("Search for text"));
 	findAct->setShortcuts(QKeySequence::Find);
 	connect(findAct, SIGNAL(triggered()), this, SLOT(find()));
 
-	findNextAct = new QAction(tr("Find &Next"), this);
+	findPrevAct = new QAction(QtIconLoader::icon("go-previous"), tr("Find &Prev"), this);
+	findPrevAct->setStatusTip(tr("Repeat the last search"));
+	findPrevAct->setShortcuts(QKeySequence::FindPrevious);
+	connect(findPrevAct, SIGNAL(triggered()), this, SLOT(findPrev()));
+	// findPrevAct->setEnabled(false);
+
+	findNextAct = new QAction(QtIconLoader::icon("go-next"),tr("Find &Next"), this);
 	findNextAct->setStatusTip(tr("Repeat the last search"));
 	findNextAct->setShortcuts(QKeySequence::FindNext);
 	connect(findNextAct, SIGNAL(triggered()), this, SLOT(findNext()));
-	findNextAct->setEnabled(false);
+	// findNextAct->setEnabled(false);
 
 	connect(textEdit, SIGNAL(copyAvailable(bool)),
 		cutAct, SLOT(setEnabled(bool)));
@@ -284,6 +291,7 @@ void QsciApp::createMenus()
 	editMenu->addSeparator();
 	editMenu->addAction(findAct);
 	editMenu->addAction(findNextAct);
+	editMenu->addAction(findPrevAct);
 	editMenu->addAction(gotoLineAct);
 
 	viewMenu = menuBar()->addMenu(tr("&View"));
@@ -317,6 +325,22 @@ void QsciApp::createToolBars()
 	editToolBar->addAction(cutAct);
 	editToolBar->addAction(copyAct);
 	editToolBar->addAction(pasteAct);
+
+	findToolBar = addToolBar(tr("&Find"));
+	findEntry = new QLineEdit();
+	findEntry->setMaximumWidth(200);
+	connect(findEntry, SIGNAL(textEdited(QString)), this, SLOT(clearSearchDir()));
+	connect(findEntry, SIGNAL(returnPressed()), this, SLOT(findNext()));
+	findToolBar->addWidget(findEntry);
+	findToolBar->addAction(findPrevAct);
+	findToolBar->addAction(findNextAct);
+	findToolBar->hide();
+	QAction *closeToolBarAct
+	       = new QAction(QtIconLoader::icon("application-exit"),
+			     tr("&Close"), this);
+	closeToolBarAct->setStatusTip(tr("Close the find toolbar"));
+	connect(closeToolBarAct, SIGNAL(triggered()), findToolBar, SLOT(hide()));
+	findToolBar->addAction(closeToolBarAct);
 }
 
 void QsciApp::createStatusBar()
@@ -384,22 +408,38 @@ void QsciApp::gotoLine(int line)
 
 void QsciApp::find()
 {
-	if (!findDialog) {
-		findDialog = new FindDialog(this);
-		connect(findDialog,
-			SIGNAL(findText(const QString, bool, bool, bool, bool, bool)), this,
-			SLOT(findText(const QString, bool, bool, bool, bool, bool)));
-	}
 	if (textEdit->hasSelectedText()) {
-		findDialog->setSearchText(textEdit->selectedText());
+		findEntry->setText(textEdit->selectedText());
 	}
-	findDialog->raise();
-	findDialog->show();
-	findDialog->activateWindow();
+	findToolBar->show();
+	findEntry->setFocus();
+}
+
+void QsciApp::findText(bool forwards)
+{
+	QString text = findEntry->text();
+	if (text.isEmpty())
+		return;
+
+	if (forwards)
+		lastSearchDir = QsciApp::DirForwards;
+	else
+		lastSearchDir = QsciApp::DirBackwards;
+
+	bool found = textEdit->findFirst(text, false, true, 
+			false, false, forwards);
+	if (!found)
+		statusBar()->showMessage(tr("No match"));
+	else
+		statusBar()->showMessage("");
+
 }
 
 void QsciApp::findNext()
 {
+	if (lastSearchDir != QsciApp::DirForwards)
+		return findText(true);
+
 	bool found = textEdit->findNext();
 	if (!found)
 		statusBar()->showMessage(tr("No match"));
@@ -407,17 +447,21 @@ void QsciApp::findNext()
 		statusBar()->showMessage("");
 }
 
-void QsciApp::findText(const QString text, bool regex, bool caseSensitive,
-		bool wholeWord, bool wrap, bool backwards)
+void QsciApp::findPrev()
 {
-	bool found = textEdit->findFirst(text, regex, caseSensitive, 
-			wholeWord, wrap, !backwards);
+	if (lastSearchDir != QsciApp::DirBackwards)
+		return findText(false);
+
+	bool found = textEdit->findNext();
 	if (!found)
 		statusBar()->showMessage(tr("No match"));
 	else
 		statusBar()->showMessage("");
+}
 
-	findNextAct->setEnabled(true);
+void QsciApp::clearSearchDir()
+{
+	lastSearchDir = QsciApp::DirNone;
 }
 
 bool QsciApp::saveIfModified()
