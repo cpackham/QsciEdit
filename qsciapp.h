@@ -18,6 +18,10 @@ class QsciApp : public QMainWindow
 
 public:
 	QsciApp(const QString = 0);
+	QString getLineCommentString();
+	QString getBlockCommentStartString();
+	QString getBlockCommentMiddleString();
+	QString getBlockCommentEndString();
 
 public slots:
 	void newFile();
@@ -53,6 +57,8 @@ private slots:
 	void askForLine();
 	void clearSearchDir();
 	void setWrapText(bool);
+	void lineComment();
+	void blockComment();
 
 private:
 	void createActions();
@@ -96,6 +102,8 @@ private:
 	QAction *findAct;
 	QAction *findPrevAct;
 	QAction *findNextAct;
+	QAction *lineCommentAct;
+	QAction *blockCommentAct;
 
 	QAction *lineNumAct;
 	QAction *whiteSpaceAct;
@@ -109,6 +117,10 @@ private:
 	QAction *aboutQtAct;
 
 	enum Dir lastSearchDir;
+	QString lineCommentString;
+	QString blockCommentStartString;
+	QString blockCommentMiddleString;
+	QString blockCommentEndString;
 
 };
 #endif

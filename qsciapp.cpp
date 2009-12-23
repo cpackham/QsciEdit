@@ -14,6 +14,10 @@ QsciApp::QsciApp(const QString fileName)
 {
 	textEdit = new QsciScintilla;
 	findDialog = NULL;
+	lineCommentString = "";
+	blockCommentStartString = "";
+	blockCommentMiddleString = "";
+	blockCommentEndString = "";
 
 	// Order here is important
 	setCurrentFile("");
@@ -35,6 +39,26 @@ QsciApp::QsciApp(const QString fileName)
 
 	connect(textEdit, SIGNAL(modificationChanged(bool)),
 		this, SLOT(documentModified(bool)));
+}
+
+QString QsciApp::getLineCommentString()
+{
+	return lineCommentString;
+}
+
+QString QsciApp::getBlockCommentStartString()
+{
+	return blockCommentStartString;
+}
+
+QString QsciApp::getBlockCommentMiddleString()
+{
+	return blockCommentMiddleString;
+}
+
+QString QsciApp::getBlockCommentEndString()
+{
+	return blockCommentEndString;
 }
 
 void QsciApp::closeEvent(QCloseEvent *event)
@@ -152,6 +176,55 @@ void QsciApp::askForLine()
 	}
 }
 
+void QsciApp::lineComment()
+{
+	int i;
+	int from, ifrom, to, ito;
+	QString comment = getLineCommentString();
+	if (comment.isEmpty())
+		return;
+
+	textEdit->beginUndoAction();
+	textEdit->getCursorPosition(&from, &ifrom);
+	to = from;
+	if (textEdit->hasSelectedText()) {
+		textEdit->getSelection (&from, &ifrom, &to, &ito);
+	}
+	for (i = from; i <= to; i++) {
+		textEdit->insertAt(comment, i, 0);
+	}
+	textEdit->endUndoAction();
+}
+
+void QsciApp::blockComment()
+{
+	if (!textEdit->hasSelectedText())
+		return;
+
+	QString start = getBlockCommentStartString();
+	if (start.isEmpty())
+		return;
+
+	QString middle = getBlockCommentMiddleString();
+	QString end = getBlockCommentEndString();
+
+	int from, ifrom, to, ito;
+	textEdit->beginUndoAction();
+	textEdit->getSelection (&from, &ifrom, &to, &ito);
+	if (!end.isEmpty())
+		textEdit->insertAt(end, to, ito);
+
+	textEdit->insertAt(start, from, ifrom);
+
+	if (!middle.isEmpty()) {
+		for (int i=from+1; i < to; i++) {
+			textEdit->insertAt(middle, i, 0);
+		}	
+	}
+
+	textEdit->endUndoAction();
+}
+
 void QsciApp::createActions()
 {
 #define new_action(act, shortstr, longstr, keyseq, slot, icon) \
@@ -198,6 +271,10 @@ void QsciApp::createActions()
 			QKeySequence::Copy,copy(),
 			QtIconLoader::icon("edit-copy"));
 	copyAct->setEnabled(false);
+	connect(textEdit, SIGNAL(copyAvailable(bool)),
+		cutAct, SLOT(setEnabled(bool)));
+	connect(textEdit, SIGNAL(copyAvailable(bool)),
+		copyAct, SLOT(setEnabled(bool)));
 
 	new_action(pasteAct, tr("&Paste"),
 			tr("Paste text from the clipboard"),
@@ -236,10 +313,15 @@ void QsciApp::createActions()
 	connect(findNextAct, SIGNAL(triggered()), this, SLOT(findNext()));
 	// findNextAct->setEnabled(false);
 
-	connect(textEdit, SIGNAL(copyAvailable(bool)),
-		cutAct, SLOT(setEnabled(bool)));
-	connect(textEdit, SIGNAL(copyAvailable(bool)),
-		copyAct, SLOT(setEnabled(bool)));
+	lineCommentAct = new QAction(tr("Line Comment"), this);
+	lineCommentAct->setStatusTip(tr("Comment out lines"));
+	lineCommentAct->setShortcut(tr("Ctrl+D"));
+	connect(lineCommentAct, SIGNAL(triggered()), this, SLOT(lineComment()));
+
+	blockCommentAct = new QAction(tr("Block Comment"), this);
+	blockCommentAct->setStatusTip(tr("Comment out the selected block of text"));
+	blockCommentAct->setShortcut(tr("Ctrl+Shift+D"));
+	connect(blockCommentAct, SIGNAL(triggered()), this, SLOT(blockComment()));
 
 #define checkable_act(act, shortstr, longstr, slot, enable) \
 	act = new QAction(shortstr, this); \
@@ -308,6 +390,8 @@ void QsciApp::createMenus()
 	editMenu->addAction(gotoLineAct);
 	editMenu->addAction(gotoBraceAct);
 	editMenu->addAction(selectBraceAct);
+	editMenu->addAction(lineCommentAct);
+	editMenu->addAction(blockCommentAct);
 
 	viewMenu = menuBar()->addMenu(tr("&View"));
 	viewMenu->addAction(lineNumAct);
@@ -559,7 +643,11 @@ void QsciApp::setCurrentFile(const QString &fileName)
 		shownName = QFileInfo(curFile).fileName();
 
 	setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(APPLICATION_NAME));
-	textEdit->setLexer(LexerSelector::getLexerForFile(fileName));
+	textEdit->setLexer(LexerSelector::getLexerForFile(fileName,
+			&lineCommentString,
+			&blockCommentStartString,
+			&blockCommentMiddleString,
+			&blockCommentEndString));
 	if (textEdit->lexer()) {
 		QFont font = QFont("Monospaced, Courier", 10);
 		textEdit->lexer()->setDefaultFont(font);

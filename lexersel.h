@@ -6,7 +6,11 @@ class QsciLexer;
 class LexerSelector {
 
 public:
-	static QsciLexer* getLexerForFile(const QString &fileName);
+	static QsciLexer* getLexerForFile(const QString &fileName,
+		QString *lineCommentString,
+		QString *blockCommentStartString,
+		QString *blockCommentMiddleString,
+		QString *blockCommentEndString);
 };
 
 #endif
