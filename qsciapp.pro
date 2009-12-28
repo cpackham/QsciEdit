@@ -1,10 +1,10 @@
-QSCI_HEADER_PATH = /usr/include/
-QSCI_LIB_PATH = /usr/lib
-
 TEMPLATE = app
 TARGET = qsciedit
 CONFIG += qt
 QT += xml
+
+unix|macx { include(config.unix) }
+win32 { include(config.win32) }
 
 SOURCES = qsciapp.cpp \
 	qticonloader.cpp \
@@ -21,7 +21,10 @@ HEADERS = qsciapp.h \
 
 RESOURCES = qsciapp.qrc
 
-INCLUDEPATH += $${QSCI_HEADER_PATH}/Qsci
+INCLUDEPATH += $${QSCI_HEADER_PATH}
 
-LIBS += -L$${QSCI_LIB_PATH}/Qsci \
+LIBS += -L$${QSCI_LIB_PATH} \
 	-lqscintilla2
+
+message ("Qsci library path: $${QSCI_LIB_PATH}")
+message ("Qsci header path: $${QSCI_HEADER_PATH}")

@@ -1,0 +1,2 @@
+QSCI_HEADER_PATH = /usr/include/Qsci
+QSCI_LIB_PATH = /usr/lib/Qsci
