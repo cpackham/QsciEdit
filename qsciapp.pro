@@ -10,11 +10,14 @@ SOURCES = qsciapp.cpp \
 	qticonloader.cpp \
 	lexersel.cpp \
 	finddialog.cpp \
+	actions.cpp \
 	main.cpp
 HEADERS = qsciapp.h \
 	qticonloader.h \
 	lexersel.h \
-	finddialog.h
+	finddialog.h \
+	actions.h \
+	globals.h
 
 RESOURCES = qsciapp.qrc
 

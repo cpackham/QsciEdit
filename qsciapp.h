@@ -5,16 +5,11 @@
 class QLineEdit;
 class QsciScintilla;
 class FindDialog;
+class Actions;
 
 class QsciApp : public QMainWindow
 {
 	Q_OBJECT
-
-	enum Dir {
-		DirNone = 0,
-		DirForwards,
-		DirBackwards
-	};
 
 public:
 	QsciApp(const QString = 0);
@@ -22,6 +17,7 @@ public:
 	QString getBlockCommentStartString();
 	QString getBlockCommentMiddleString();
 	QString getBlockCommentEndString();
+	QsciScintilla *editor() { return textEdit; };
 
 public slots:
 	void newFile();
@@ -33,10 +29,6 @@ public slots:
 	void paste();
 	void undo();
 	void redo();
-	void find();
-	void findText(bool);
-	void findNext();
-	void findPrev();
 	void about();
 	void gotoLine(int);
 
@@ -55,7 +47,6 @@ private slots:
 	void setAutoCompletion(bool);
 	void setBraceMatching(bool);
 	void askForLine();
-	void clearSearchDir();
 	void setWrapText(bool);
 	void lineComment();
 	void blockComment();
@@ -73,50 +64,10 @@ private:
 	void saveSettings();
 
 	QsciScintilla *textEdit;
+	Actions *actions;
 	QString curFile;
-	QMenu *fileMenu;
-	QMenu *editMenu;
-	QMenu *viewMenu;
-	QMenu *settingsMenu;
-	QMenu *helpMenu;
-	QToolBar *fileToolBar;
-	QToolBar *editToolBar;
-	QToolBar *findToolBar;
-	QLineEdit *findEntry;
 	FindDialog *findDialog;
 
-	QAction *newAct;
-	QAction *openAct;
-	QAction *saveAct;
-	QAction *saveAsAct;
-	QAction *exitAct;
-
-	QAction *undoAct;
-	QAction *redoAct;
-	QAction *cutAct;
-	QAction *copyAct;
-	QAction *pasteAct;
-	QAction *gotoLineAct;
-	QAction *gotoBraceAct;
-	QAction *selectBraceAct;
-	QAction *findAct;
-	QAction *findPrevAct;
-	QAction *findNextAct;
-	QAction *lineCommentAct;
-	QAction *blockCommentAct;
-
-	QAction *lineNumAct;
-	QAction *whiteSpaceAct;
-	QAction *wrapTextAct;
-
-	QAction *foldAct;
-	QAction *autoCompAct;
-	QAction *braceMatchAct;
-
-	QAction *aboutAct;
-	QAction *aboutQtAct;
-
-	enum Dir lastSearchDir;
 	QString lineCommentString;
 	QString blockCommentStartString;
 	QString blockCommentMiddleString;
