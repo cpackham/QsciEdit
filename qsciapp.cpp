@@ -18,12 +18,12 @@ QsciApp::QsciApp(const QString fileName)
 	blockCommentEndString = "";
 
 	// Order here is important
+	createStatusBar();
 	setCurrentFile("");
 	if (!fileName.isEmpty())
 		loadFile(fileName);
 	loadSettings();
 	actions = new Actions(this);
-	createStatusBar();
 	setAcceptDrops(true);
 	setCentralWidget(textEdit);
 
@@ -272,7 +272,9 @@ void QsciApp::about()
 	QFile file(":/about.html");
 	if(file.open(QFile::ReadOnly | QFile::Text)) {
 		QTextStream in(&file);
-		QMessageBox::about(this, tr("About %1").arg(APPLICATION_NAME), in.readAll());
+		QMessageBox::about(this,
+			tr("About %1").arg(APPLICATION_NAME),
+			in.readAll());
 	}
 }
 
