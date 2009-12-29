@@ -19,7 +19,7 @@ QsciApp::QsciApp(const QString fileName)
 
 	// Order here is important
 	createStatusBar();
-	setCurrentFile("");
+	setCurrentFile(fileName);
 	if (!fileName.isEmpty())
 		loadFile(fileName);
 	loadSettings();
