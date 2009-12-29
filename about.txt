@@ -1,6 +1,8 @@
 QsciEdit
 ========
 
+include::version.txt[]
+
 A simple programmers code editor, by a simple programmer.
 
 QsciEdit is licenced under the GPLv2 and makes use of the following LGPL
