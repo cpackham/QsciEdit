@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <QtGui>
 #include <qsciscintilla.h>
 #include <qscilexer.h>
@@ -16,12 +17,20 @@ QsciApp::QsciApp(const QString fileName)
 	blockCommentStartString = "";
 	blockCommentMiddleString = "";
 	blockCommentEndString = "";
+	fileProvided = false;
 
 	// Order here is important
 	createStatusBar();
 	setCurrentFile(fileName);
-	if (!fileName.isEmpty())
-		loadFile(fileName);
+
+	if (!fileName.isEmpty()) {
+		fileProvided = true;
+		if (fileName == "-")
+			loadStdIn();
+		else
+			loadFile(fileName);
+	}
+
 	loadSettings();
 	actions = new Actions(this);
 	setAcceptDrops(true);
@@ -330,6 +339,17 @@ void QsciApp::loadFile(const QString &fileName)
 	statusBar()->showMessage(tr("File %1 loaded").arg(fileName));
 }
 
+void QsciApp::loadStdIn()
+{
+	QTextStream in(stdin);
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+	textEdit->setText(in.readAll());
+	QApplication::restoreOverrideCursor();
+
+	setCurrentFile("");
+	statusBar()->showMessage(tr("StdIn loaded"));
+}
+
 bool QsciApp::saveFile(const QString &fileName)
 {
 	QFile file(fileName);
@@ -393,7 +413,7 @@ void QsciApp::loadSettings()
 
 	move (pos);
 	resize(size);
-	if (curFile.isEmpty() && !file.isEmpty())
+	if (!fileProvided && !file.isEmpty())
 		loadFile(file);
 	setLineNumbers(linenumbers);
 	setWhiteSpaceVis(whitespace);

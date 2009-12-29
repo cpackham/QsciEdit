@@ -57,6 +57,7 @@ private:
 	void createToolBars();
 	void createStatusBar();
 	void loadFile(const QString &filename);
+	void loadStdIn();
 	bool saveFile(const QString &filename);
 	void setCurrentFile(const QString &filename);
 	bool saveIfModified();
@@ -72,6 +73,7 @@ private:
 	QString blockCommentStartString;
 	QString blockCommentMiddleString;
 	QString blockCommentEndString;
+	bool fileProvided;
 
 };
 #endif
