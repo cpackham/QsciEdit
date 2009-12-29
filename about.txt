@@ -1,0 +1,12 @@
+QsciEdit
+========
+
+A simple programmers code editor, by a simple programmer.
+
+QsciEdit is licenced under the GPLv2 and makes use of the following LGPL
+components:
+
+* Qt C++ Toolkit http://qt.nokia.com/
+* QtIconloader http://code.google.com/p/qticonloader/
+* QScintilla2 http://www.riverbankcomputing.co.uk/software/qscintilla/
+
