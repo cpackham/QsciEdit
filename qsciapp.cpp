@@ -8,6 +8,7 @@
 #include "finddialog.h"
 #include "actions.h"
 #include "globals.h"
+#include "editorsettings.h"
 
 QsciApp::QsciApp(const QString fileName)
 {
@@ -18,6 +19,7 @@ QsciApp::QsciApp(const QString fileName)
 	blockCommentMiddleString = "";
 	blockCommentEndString = "";
 	fileProvided = false;
+	editorSettings = new EditorSettings;
 
 	// Order here is important
 	createStatusBar();
@@ -32,6 +34,7 @@ QsciApp::QsciApp(const QString fileName)
 	}
 
 	loadSettings();
+	applySettings();
 	actions = new Actions(this);
 	setAcceptDrops(true);
 	setCentralWidget(textEdit);
@@ -120,6 +123,7 @@ void QsciApp::setLineNumbers(bool enable)
 	} else {
 		textEdit->setMarginWidth(LINE_NUM_MARGIN, 0);
 	}
+	editorSettings->setLineNumbers(enable);
 }
 void QsciApp::setWhiteSpaceVis(bool enable)
 {
@@ -128,6 +132,7 @@ void QsciApp::setWhiteSpaceVis(bool enable)
 	} else {
 		textEdit->setWhitespaceVisibility(QsciScintilla::WsInvisible);
 	}
+	editorSettings->setWhitespace(enable);
 }
 
 void QsciApp::setFolding(bool enable)
@@ -137,16 +142,24 @@ void QsciApp::setFolding(bool enable)
 	} else {
 		textEdit->setFolding(QsciScintilla::NoFoldStyle);
 	}
+	editorSettings->setCodeFolding(enable);
 }
 
 void QsciApp::setAutoCompletion(bool enable)
 {
+	setAutoCompletion(enable, 3);
+}
+
+void QsciApp::setAutoCompletion(bool enable, int thresh)
+{
 	if (enable) {
 		textEdit->setAutoCompletionSource(QsciScintilla::AcsAll);
-		textEdit->setAutoCompletionThreshold(3);
+		textEdit->setAutoCompletionThreshold(thresh);
 	} else {
 		textEdit->setAutoCompletionSource(QsciScintilla::AcsNone);
 	}
+	editorSettings->setAutoComplete(enable);
+	editorSettings->setAutoCompleteThreshold(thresh);
 }
 
 void  QsciApp::setBraceMatching(bool enable)
@@ -160,6 +173,7 @@ void  QsciApp::setBraceMatching(bool enable)
 	} else {
 		textEdit->setBraceMatching(QsciScintilla::NoBraceMatch);
 	}
+	editorSettings->setBraceMatch(enable);
 }
 
 void QsciApp::askForLine()
@@ -402,25 +416,12 @@ void QsciApp::loadSettings()
 	QPoint pos = settings.value("pos", QPoint(0,0)).toPoint();
 	QSize size = settings.value("size", QSize(600,700)).toSize();
 	QString file = settings.value("file", "").toString();
-	settings.beginGroup("editor settings");
-	bool linenumbers = settings.value("line numbers",false).toBool();
-	bool whitespace = settings.value("whitespace", false).toBool();
-	bool wraptext = settings.value("wrap text", false).toBool();
-	bool folding = settings.value("folding", false).toBool();
-	bool autocomplete = settings.value("auto completion", false).toBool();
-	bool bracematch = settings.value("brace matching", false).toBool();
-	settings.endGroup();
+	editorSettings->load();
 
 	move (pos);
 	resize(size);
 	if (!fileProvided && !file.isEmpty())
 		loadFile(file);
-	setLineNumbers(linenumbers);
-	setWhiteSpaceVis(whitespace);
-	setFolding(folding);
-	setAutoCompletion(autocomplete);
-	setBraceMatching(bracematch);
-	setWrapText(wraptext);
 }
 
 void QsciApp::saveSettings()
@@ -429,13 +430,16 @@ void QsciApp::saveSettings()
 	settings.setValue("pos", pos());
 	settings.setValue("size", size());
 	settings.setValue("file", curFile);
-	settings.beginGroup("editor settings");
-	settings.setValue("line numbers", textEdit->marginLineNumbers(LINE_NUM_MARGIN));
-	settings.setValue("whitespace", textEdit->whitespaceVisibility() != QsciScintilla::WsInvisible);
-	settings.setValue("wrap text", textEdit->wrapMode() != QsciScintilla::WrapNone);
+	editorSettings->save();
+}
 
-	settings.setValue("folding", textEdit->folding() != QsciScintilla::NoFoldStyle);
-	settings.setValue("brace matching", textEdit->braceMatching() != QsciScintilla::NoBraceMatch);
-	settings.setValue("auto completion", textEdit->autoCompletionSource() != QsciScintilla::AcsNone);
-	settings.endGroup();
+void QsciApp::applySettings()
+{
+	setLineNumbers(editorSettings->displayLineNumbers());
+	setWhiteSpaceVis(editorSettings->displayWhitespace());
+	setFolding(editorSettings->displayCodeFolding());
+	setAutoCompletion(editorSettings->displayAutoComplete(),
+			editorSettings->autoCompleteThreshold());
+	setBraceMatching(editorSettings->displayBraceMatch());
+	setWrapText(editorSettings->displayWrapText());
 }

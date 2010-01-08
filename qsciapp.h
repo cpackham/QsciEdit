@@ -6,6 +6,7 @@ class QLineEdit;
 class QsciScintilla;
 class FindDialog;
 class Actions;
+class EditorSettings;
 
 class QsciApp : public QMainWindow
 {
@@ -18,6 +19,7 @@ public:
 	QString getBlockCommentMiddleString();
 	QString getBlockCommentEndString();
 	QsciScintilla *editor() { return textEdit; };
+	EditorSettings *editorSettings;
 
 public slots:
 	void newFile();
@@ -45,6 +47,7 @@ private slots:
 	void setWhiteSpaceVis(bool);
 	void setFolding(bool);
 	void setAutoCompletion(bool);
+	void setAutoCompletion(bool, int);
 	void setBraceMatching(bool);
 	void askForLine();
 	void setWrapText(bool);
@@ -63,6 +66,7 @@ private:
 	bool saveIfModified();
 	void loadSettings();
 	void saveSettings();
+	void applySettings();
 
 	QsciScintilla *textEdit;
 	Actions *actions;

@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "qticonloader.h"
 #include "qsciapp.h"
+#include "editorsettings.h"
 
 Actions::Actions(QsciApp* parent) : QObject(parent)
 {
@@ -126,29 +127,29 @@ void Actions::setupActions()
 	checkable_act(lineNumAct, tr("Line Numbers"),
 		tr("Display line numbers in the margin"),
 		setLineNumbers(bool),
-		application()->editor()->marginLineNumbers(LINE_NUM_MARGIN));
+		application()->editorSettings->displayLineNumbers());
 	checkable_act(whiteSpaceAct, tr("White space"),
 		tr("Make white space visible"),
 		setWhiteSpaceVis(bool),
-		application()->editor()->whitespaceVisibility() != QsciScintilla::WsInvisible);
+		application()->editorSettings->displayWhitespace());
 	checkable_act(wrapTextAct, tr("Wrap Text"),
 		tr("Wrap text"),
 		setWrapText(bool),
-		application()->editor()->wrapMode() != QsciScintilla::WrapNone);
+		application()->editorSettings->displayWrapText());
 	
 	// Settings
 	checkable_act(foldAct, tr("Folding"), 
 		tr("Enable/disable code folding"),
 		setFolding(bool),
-		application()->editor()->folding() != QsciScintilla::NoFoldStyle);
+		application()->editorSettings->displayCodeFolding());
 	checkable_act(autoCompAct, tr("Auto completion"),
 		tr("Suggest completions for the current text"),
 		setAutoCompletion(bool),
-		application()->editor()->autoCompletionSource() != QsciScintilla::AcsNone);
+		application()->editorSettings->displayAutoComplete());
 	checkable_act(braceMatchAct, tr("Brace Matching"),
 		tr("Highlight matching pairs of braces"),
 		setBraceMatching(bool), 
-		application()->editor()->braceMatching() != QsciScintilla::NoBraceMatch);
+		application()->editorSettings->displayBraceMatch());
 	
 	// Help actions
 	aboutAct = new QAction(QtIconLoader::icon("help-about"), "&About", application());
