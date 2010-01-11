@@ -12,7 +12,6 @@ SOURCES = qsciapp.cpp \
 	finddialog.cpp \
 	actions.cpp \
 	editorsettings.cpp \
-	version.cpp \
 	main.cpp
 HEADERS = qsciapp.h \
 	qticonloader.h \
@@ -32,6 +31,8 @@ LIBS += -L$${QSCI_LIB_PATH} \
 
 target.path = $${INSTALL_PATH}/bin
 INSTALLS += target
+
+include (version.mk)
 
 message ("Qsci library path: $${QSCI_LIB_PATH}")
 message ("Qsci header path: $${QSCI_HEADER_PATH}")
