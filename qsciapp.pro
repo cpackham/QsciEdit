@@ -12,6 +12,7 @@ SOURCES = qsciapp.cpp \
 	finddialog.cpp \
 	actions.cpp \
 	editorsettings.cpp \
+	version.cpp \
 	main.cpp
 HEADERS = qsciapp.h \
 	qticonloader.h \
@@ -19,7 +20,8 @@ HEADERS = qsciapp.h \
 	finddialog.h \
 	actions.h \
 	globals.h \
-	editorsettings.h
+	editorsettings.h \
+	version.h \
 
 RESOURCES = qsciapp.qrc
 

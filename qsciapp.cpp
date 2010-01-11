@@ -9,6 +9,7 @@
 #include "actions.h"
 #include "globals.h"
 #include "editorsettings.h"
+#include "version.h"
 
 QsciApp::QsciApp(const QString fileName)
 {
@@ -293,12 +294,17 @@ void QsciApp::paste() { textEdit->paste(); };
 void QsciApp::about()
 {
 	QFile file(":/about.html");
+	QString data;
+	Version version;
+
 	if(file.open(QFile::ReadOnly | QFile::Text)) {
 		QTextStream in(&file);
-		QMessageBox::about(this,
-			tr("About %1").arg(APPLICATION_NAME),
-			in.readAll());
+		data = in.readAll();
 	}
+
+	QMessageBox::about(this,
+		tr("About %1").arg(APPLICATION_NAME),
+		version.versionText(data));
 }
 
 void QsciApp::gotoLine(int line)

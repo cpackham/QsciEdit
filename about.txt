@@ -1,7 +1,9 @@
 QsciEdit
 ========
 
-include::version.txt[]
+*GIT_VERSION_STRING*
+
+_BUILD_DATE_STRING_
 
 A simple programmers code editor, by a simple programmer.
 
