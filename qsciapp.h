@@ -32,7 +32,7 @@ public slots:
 	void undo();
 	void redo();
 	void about();
-	void gotoLine(int);
+	void gotoLine(int, int=0);
 
 protected:
 	void closeEvent(QCloseEvent *event);

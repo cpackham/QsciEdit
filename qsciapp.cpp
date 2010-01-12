@@ -309,10 +309,10 @@ void QsciApp::about()
 		version.versionText(data));
 }
 
-void QsciApp::gotoLine(int line)
+void QsciApp::gotoLine(int line, int index)
 {
 	if (line <= textEdit->lines()) {
-		textEdit->setCursorPosition(line-1, 0);
+		textEdit->setCursorPosition(line-1, index);
 		textEdit->ensureCursorVisible ();
 		textEdit->ensureLineVisible (line+9);
 	}
@@ -426,20 +426,29 @@ void QsciApp::loadSettings()
 	QPoint pos = settings.value("pos", QPoint(0,0)).toPoint();
 	QSize size = settings.value("size", QSize(600,700)).toSize();
 	QString file = settings.value("file", "").toString();
+	int line = settings.value("CursorLine", 0).toInt();
+	int index = settings.value("CursorIndex", 0).toInt();
 	editorSettings->load();
 
 	move (pos);
 	resize(size);
-	if (!fileProvided && !file.isEmpty())
+	if (!fileProvided && !file.isEmpty()) {
 		loadFile(file);
+		gotoLine(line+1, index);
+	}
 }
 
 void QsciApp::saveSettings()
 {
+	int line, index;
 	QSettings settings(COMPANY_NAME, APPLICATION_NAME);
+
+	textEdit->getCursorPosition(&line, &index);
 	settings.setValue("pos", pos());
 	settings.setValue("size", size());
 	settings.setValue("file", curFile);
+	settings.setValue("CursorLine", line);
+	settings.setValue("CursorIndex", index);
 	editorSettings->save();
 }
 
