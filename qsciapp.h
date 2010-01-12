@@ -13,7 +13,7 @@ class QsciApp : public QMainWindow
 	Q_OBJECT
 
 public:
-	QsciApp(const QString = 0);
+	QsciApp(const QString = 0, unsigned int = 1);
 	QString getLineCommentString();
 	QString getBlockCommentStartString();
 	QString getBlockCommentMiddleString();

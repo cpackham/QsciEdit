@@ -11,7 +11,7 @@
 #include "editorsettings.h"
 #include "version.h"
 
-QsciApp::QsciApp(const QString fileName)
+QsciApp::QsciApp(const QString fileName, unsigned int line)
 {
 	textEdit = new QsciScintilla;
 	findDialog = NULL;
@@ -32,6 +32,7 @@ QsciApp::QsciApp(const QString fileName)
 			loadStdIn();
 		else
 			loadFile(fileName);
+		gotoLine(line);
 	}
 
 	loadSettings();
@@ -47,6 +48,7 @@ QsciApp::QsciApp(const QString fileName)
 
 	connect(textEdit, SIGNAL(modificationChanged(bool)),
 		this, SLOT(documentModified(bool)));
+
 }
 
 QString QsciApp::getLineCommentString()
