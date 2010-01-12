@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = qsciedit
-CONFIG += qt
+CONFIG += qt debug_and_release
 QT += xml
 
 unix|macx { include(config.unix) }
