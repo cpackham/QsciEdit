@@ -311,9 +311,11 @@ void QsciApp::about()
 
 void QsciApp::gotoLine(int line)
 {
-	textEdit->setCursorPosition(line-1, 0);
-	textEdit->ensureCursorVisible ();
-	textEdit->ensureLineVisible (line+9);
+	if (line <= textEdit->lines()) {
+		textEdit->setCursorPosition(line-1, 0);
+		textEdit->ensureCursorVisible ();
+		textEdit->ensureLineVisible (line+9);
+	}
 }
 
 void QsciApp::setWrapText(bool enabled)
