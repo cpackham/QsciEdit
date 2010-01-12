@@ -265,6 +265,10 @@ QIcon QtIconLoaderImplementation::loadIcon(const QString &name)
                          QSize(size, size),
                          QIcon::Normal, QIcon::Off);
         }
+        QThemeIconEntries::iterator i;
+        for (i=entries.begin(); i != entries.end(); i = entries.erase(i)) {
+            delete *i;
+        }
     }
     return icon;
 }
