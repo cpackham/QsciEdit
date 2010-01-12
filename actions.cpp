@@ -141,12 +141,18 @@ void Actions::setupActions()
 		tr("Wrap text"),
 		setWrapText(bool),
 		application()->editorSettings->displayWrapText());
+
+	foldAllAct = new QAction(tr("Toggle All Code Folds"), application());
+	foldAllAct->setStatusTip(tr("Folds or unfolds all lines"));
+	connect(foldAllAct, SIGNAL(triggered()), application()->editor(), SLOT(foldAll()));
+	foldAllAct->setEnabled(application()->editorSettings->displayCodeFolding());
 	
 	// Settings
-	checkable_act(foldAct, tr("Folding"), 
+	checkable_act(foldAct, tr("Code Folding"), 
 		tr("Enable/disable code folding"),
 		setFolding(bool),
 		application()->editorSettings->displayCodeFolding());
+	connect(foldAct, SIGNAL(triggered(bool)), foldAllAct, SLOT(setEnabled(bool)));
 	checkable_act(autoCompAct, tr("Auto completion"),
 		tr("Suggest completions for the current text"),
 		setAutoCompletion(bool),
@@ -201,6 +207,8 @@ void Actions::setupMenus()
 	viewMenu->addAction(lineNumAct);
 	viewMenu->addAction(whiteSpaceAct);
 	viewMenu->addAction(wrapTextAct);
+	viewMenu->addSeparator();
+	viewMenu->addAction(foldAllAct);
 
 	settingsMenu = application()->menuBar()->addMenu(tr("&Settings"));
 	settingsMenu->addAction(foldAct);
