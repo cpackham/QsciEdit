@@ -65,6 +65,7 @@ private:
 	QAction *findNextAct;
 	QAction *lineCommentAct;
 	QAction *blockCommentAct;
+	QAction *suggestCompletion;
 
 	QAction *lineNumAct;
 	QAction *whiteSpaceAct;

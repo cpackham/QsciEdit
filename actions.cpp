@@ -116,6 +116,11 @@ void Actions::setupActions()
 	blockCommentAct->setShortcut(tr("Ctrl+Shift+D"));
 	connect(blockCommentAct, SIGNAL(triggered()), application(), SLOT(blockComment()));
 
+	suggestCompletion = new QAction(tr("Suggest Completion"), application());
+	suggestCompletion->setStatusTip(tr("Suggest a completion based on the current text"));
+	suggestCompletion->setShortcut(tr("Ctrl+Space"));
+	connect(suggestCompletion, SIGNAL(triggered()), application()->editor(), SLOT(autoCompleteFromAll()));
+
 #define checkable_act(act, shortstr, longstr, slot, enable) \
 	act = new QAction(shortstr, application()); \
 	act->setStatusTip(longstr); \
@@ -190,6 +195,7 @@ void Actions::setupMenus()
 	editMenu->addAction(selectBraceAct);
 	editMenu->addAction(lineCommentAct);
 	editMenu->addAction(blockCommentAct);
+	editMenu->addAction(suggestCompletion);
 
 	viewMenu = application()->menuBar()->addMenu(tr("&View"));
 	viewMenu->addAction(lineNumAct);
