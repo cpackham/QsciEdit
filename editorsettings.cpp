@@ -24,6 +24,7 @@ void EditorSettings::load()
 	setBraceMatch(qsettings.value("brace matching", false).toBool());
 	setAutoComplete(qsettings.value("auto completion", false).toBool());
 	setAutoCompleteThreshold(qsettings.value("auto completion threshold", 3).toInt());
+	setHighlightCurrentLine(qsettings.value("HighlightCurrentLine", false).toBool());
 	qsettings.endGroup();
 }
 
@@ -38,5 +39,6 @@ void EditorSettings::save()
 	qsettings.setValue("brace matching", displayBraceMatch());
 	qsettings.setValue("auto completion",displayAutoComplete());
 	qsettings.setValue("auto completion threshold",autoCompleteThreshold());
+	qsettings.setValue("HighlightCurrentLine", highlightCurrentLine());
 	qsettings.endGroup();
 }

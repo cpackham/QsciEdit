@@ -70,6 +70,7 @@ private:
 	QAction *lineNumAct;
 	QAction *whiteSpaceAct;
 	QAction *wrapTextAct;
+	QAction *hlCurrentAct;
 	QAction *foldAllAct;
 
 	QAction *foldAct;

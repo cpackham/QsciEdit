@@ -179,6 +179,16 @@ void  QsciApp::setBraceMatching(bool enable)
 	editorSettings->setBraceMatch(enable);
 }
 
+void QsciApp::setHighlightCurrentLine(bool enable)
+{
+	if (enable) {
+		textEdit->setCaretLineVisible(true);
+	} else {
+		textEdit->setCaretLineVisible(false);
+	}
+	editorSettings->setHighlightCurrentLine(enable);
+}
+
 void QsciApp::askForLine()
 {
 	int line, index;
@@ -461,4 +471,5 @@ void QsciApp::applySettings()
 			editorSettings->autoCompleteThreshold());
 	setBraceMatching(editorSettings->displayBraceMatch());
 	setWrapText(editorSettings->displayWrapText());
+	setHighlightCurrentLine(editorSettings->highlightCurrentLine());
 }

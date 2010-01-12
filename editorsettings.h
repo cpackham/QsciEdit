@@ -24,8 +24,10 @@ public:
 	void setAutoComplete(bool b){ autocomplete = b;};
 	int  autoCompleteThreshold() { return autocompletethresh; };
 	void setAutoCompleteThreshold(int i) { autocompletethresh  = i; };
-	bool displayBraceMatch()   { return bracematch; };
-	void setBraceMatch(bool b) { bracematch = b; };
+	bool displayBraceMatch()    { return bracematch; };
+	void setBraceMatch(bool b)  { bracematch = b; };
+	bool highlightCurrentLine() { return highlightcurrent; };
+	void setHighlightCurrentLine(bool b) { highlightcurrent = b; };
 
 private:
 	bool linenumbers;
@@ -35,6 +37,7 @@ private:
 	bool autocomplete;
 	int  autocompletethresh;
 	bool bracematch;
+	bool highlightcurrent;
 };
 
 

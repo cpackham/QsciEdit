@@ -142,6 +142,11 @@ void Actions::setupActions()
 		setWrapText(bool),
 		application()->editorSettings->displayWrapText());
 
+	checkable_act(hlCurrentAct, tr("Highlight Current Line"),
+		tr("Highlight Current Line"),
+		setHighlightCurrentLine(bool),
+		application()->editorSettings->highlightCurrentLine());
+
 	foldAllAct = new QAction(tr("Toggle All Code Folds"), application());
 	foldAllAct->setStatusTip(tr("Folds or unfolds all lines"));
 	connect(foldAllAct, SIGNAL(triggered()), application()->editor(), SLOT(foldAll()));
@@ -207,6 +212,7 @@ void Actions::setupMenus()
 	viewMenu->addAction(lineNumAct);
 	viewMenu->addAction(whiteSpaceAct);
 	viewMenu->addAction(wrapTextAct);
+	viewMenu->addAction(hlCurrentAct);
 	viewMenu->addSeparator();
 	viewMenu->addAction(foldAllAct);
 
