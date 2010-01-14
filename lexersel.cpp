@@ -12,6 +12,7 @@
 #include <qscilexerhtml.h>
 #include <qscilexerdiff.h>
 #include <qscilexertcl.h>
+#include "asciidoclexer.h"
 #include "lexersel.h"
 
 QsciLexer* LexerSelector::getLexerForFile(const QString &fileName,
@@ -79,6 +80,12 @@ QsciLexer* LexerSelector::getLexerForFile(const QString &fileName,
 		*blockCommentMiddleString = "";
 		*blockCommentEndString = " */";
 		return new QsciLexerCSS;
+	} else  if (suffix == "txt"){
+		*lineCommentString = "// ";
+		*blockCommentStartString = "// ";
+		*blockCommentMiddleString = "// ";
+		*blockCommentEndString = "";
+		return new AsciiDocLexer;
 	}
 
 	return NULL;
