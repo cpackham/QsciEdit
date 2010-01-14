@@ -18,23 +18,24 @@ AsciiDocLexer::AsciiDocLexer(QObject *parent)
 		QColor("white"),
 		QFont("Monospaced, Courier", 10));
 	declareStyle(Header,
-		QColor(0xe0, 0x0, 0x0),
-		QColor("white"),
+		QColor(0x80, 0x0, 0x0),
+		QColor(0xff, 0xf0, 0xf0),
 		QFont("Monospaced, Courier", 10));
+	setEolFill(true, Header);
 	declareStyle(ParaHeader,
 		QColor(0x80, 0x0, 0x0),
-		QColor(0xff, 0x80, 0x80),
-		QFont("Monospaced, Courier", 10));
-	declareStyle(BoldText,
-		QColor(0xe0, 0x0, 0x0),
 		QColor("white"),
 		QFont("Monospaced, Courier", 10));
+	declareStyle(BoldText,
+		QColor(0x0, 0x0, 0xe0),
+		QColor(0xe0, 0xe0, 0xff),
+		QFont("Monospaced, Courier", 10));
 	declareStyle(ItalicText,
-		QColor(0xe0, 0x0, 0x0),
+		QColor(0x80, 0x0, 0xe0),
 		QColor("white"),
 		QFont("Monospaced, Courier", 10));
 	declareStyle(FixedText,
-		QColor(0xe0, 0x0, 0x0),
+		QColor(0x40, 0x0, 0xe0),
 		QColor("white"),
 		QFont("Monospaced, Courier", 10));
 	declareStyle(URL,
@@ -43,8 +44,9 @@ AsciiDocLexer::AsciiDocLexer(QObject *parent)
 		QFont("Monospaced, Courier", 10));
 	declareStyle(ListingBlock,
 		QColor(0x0, 0x0, 0x40),
-		QColor("white"),
+		QColor(0xe0, 0xe0, 0xff),
 		QFont("Monospaced, Courier", 10));
+	setEolFill(true, ListingBlock);
 	declareStyle(SideBarBlock,
 		QColor(0xe0, 0x80, 0x0),
 		QColor("white"),
@@ -73,7 +75,6 @@ QString AsciiDocLexer::description(int style) const
 void AsciiDocLexer::styleText(int start, int end)
 {
 	QString source;
-	int i;
 
 	qDebug() << __FUNCTION__ 
 		<< "start =" << start
@@ -91,11 +92,25 @@ void AsciiDocLexer::styleText(int start, int end)
 	
 	startStyling(start, 0x1f);
 	QStringList list = source.split("\n");
-	int default_style = Default;
-	for (i = 0; i < list.size(); i++) {
-		QString line = list.at(i);
+	int defaultstyle = Default;
+
+	QStringList::iterator iter, next;
+	for (iter = list.begin(); iter != list.end(); iter = next) {
+		next = iter+1;
+		QString line = *iter;
+
+		// The next line could make the current one a header.
+		if (next != list.end()) {
+			QString nextLine = *next;
+			if ( nextLine.startsWith("===") || 
+				nextLine.startsWith("~~") || 
+				(nextLine.startsWith("--") && nextLine != "----")) {
+				defaultstyle = Header;
+		       }
+		}
+
 		int len = line.size();
-		int style = default_style;
+		int style = defaultstyle;
 		qDebug() << "line =" << line;
 
 		if (line.startsWith("//")) {
@@ -104,32 +119,33 @@ void AsciiDocLexer::styleText(int start, int end)
 			   line.startsWith("~~") || 
 			   (line.startsWith("--") && line != "----")) {
 			style = Header;
+			defaultstyle = Default;
 		} else if (line.startsWith (".")) {
 			style = ParaHeader;
 		} else if (line == "****"){
 			style = SideBarBlock;
-			default_style = default_style == SideBarBlock ? Default : SideBarBlock;
+			defaultstyle = defaultstyle == SideBarBlock ? Default : SideBarBlock;
 		} else if (line == "----"){
 			style = ListingBlock;
-			default_style = default_style == ListingBlock ? Default : ListingBlock;
+			defaultstyle = defaultstyle == ListingBlock ? Default : ListingBlock;
 		} else if (!line.isEmpty()){
-			default_style = styleLine(line, default_style);
+			defaultstyle = styleLine(line, defaultstyle);
 			continue;
 		}
 		qDebug() << "Styling " << len << "bytes " << description(style);
 		setStyling(len, style);
 		// newline character was consumed in split so...
-	 	setStyling(1, Default);
+	 	setStyling(1, style);
 	}
 }
 
 int AsciiDocLexer::styleLine(QString line, int defaultstyle)
 {
-	int i;
 	QStringList list = line.split(" ");
+	QStringList::iterator iter;
 
-	for (i = 0; i < list.size(); i++) {
-		QString word = list.at(i);
+	for (iter = list.begin(); iter != list.end(); iter++) {
+		QString word = *iter;
 		int len = word.size();
 		int style = defaultstyle;
 
@@ -147,11 +163,9 @@ int AsciiDocLexer::styleLine(QString line, int defaultstyle)
 			defaultstyle = style;
 		}
 
-
-
 		if (word.endsWith("_") || word.endsWith("_.")) {
 			defaultstyle = Default;
-		} else if (word.endsWith("*")) {
+		} else if (word.endsWith("*") && word != "*" ) {
 			defaultstyle = Default;
 		} else if (word.endsWith("+")) {
 			defaultstyle = Default;
