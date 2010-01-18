@@ -48,6 +48,7 @@ private:
 
 	QAction *newAct;
 	QAction *openAct;
+	QAction *reloadAct;
 	QAction *saveAct;
 	QAction *saveAsAct;
 	QAction *exitAct;

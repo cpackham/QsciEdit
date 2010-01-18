@@ -35,6 +35,10 @@ void Actions::setupActions()
 			tr("Open an existing file"),
 			QKeySequence::Open,open(),
 			QtIconLoader::icon("document-open"));
+	new_action(reloadAct, tr("&Reload"),
+			tr("Reload the current file"),
+			QKeySequence::Refresh,reload(),
+			QtIconLoader::icon("view-refresh"));
 	new_action(saveAct,tr("&Save"),
 			tr("Save the current file"),
 			QKeySequence::Save,save(),
@@ -187,6 +191,7 @@ void Actions::setupMenus()
 	fileMenu = application()->menuBar()->addMenu(tr("&File"));
 	fileMenu->addAction(newAct);
 	fileMenu->addAction(openAct);
+	fileMenu->addAction(reloadAct);
 	fileMenu->addAction(saveAct);
 	fileMenu->addAction(saveAsAct);
 

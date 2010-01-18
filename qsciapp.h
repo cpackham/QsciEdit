@@ -24,6 +24,7 @@ public:
 public slots:
 	void newFile();
 	void open();
+	void reload();
 	bool save();
 	bool saveAs();
 	void cut();

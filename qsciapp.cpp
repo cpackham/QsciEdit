@@ -279,6 +279,18 @@ void QsciApp::open()
 	}
 }
 
+void QsciApp::reload()
+{
+	if (!curFile.isEmpty()) {
+		if (saveIfModified()) {
+			int line, index;
+			textEdit->getCursorPosition(&line, &index);
+			loadFile(curFile);
+			gotoLine(line+1, index);
+		}
+	}
+}
+
 bool QsciApp::save()
 {
 	if (curFile.isEmpty()) {
