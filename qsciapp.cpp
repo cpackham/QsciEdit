@@ -41,6 +41,7 @@ QsciApp::QsciApp(const QString fileName, unsigned int line)
 	actions = new Actions(this);
 	setAcceptDrops(true);
 	setCentralWidget(textEdit);
+	setWindowIcon(QIcon(":/qsciedit.svg"));
 
 	// The QsciScintilla drag & drop behaviour is to put the URL in as text
 	// in the current document. We want it to open the file url so disable
