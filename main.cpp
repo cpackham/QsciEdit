@@ -1,10 +1,24 @@
 #include <QtGui>
 #include "qsciapp.h"
 
+#ifndef DEBUG
+#include <unistd.h>
+#endif
+
 int main(int argc, char *argv[])
 {
 	QString fileName = "";
 	unsigned int line = 1;
+
+#ifndef DEBUG
+	pid_t pid = fork();
+
+	if (pid > 0) {
+		return 0;
+	} else if (pid < 0) {
+		perror ("Error forking");
+	}
+#endif
 
 	// Let Qt have first dibs on the command line arguments
 	QApplication app(argc, argv);
