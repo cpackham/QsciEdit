@@ -6,6 +6,10 @@ QT += xml
 unix|macx { include(config.unix) }
 win32 { include(config.win32) }
 
+CONFIG(debug, debug|release) {
+	DEFINES += DEBUG
+}
+
 SOURCES = qsciapp.cpp \
 	qticonloader.cpp \
 	lexersel.cpp \

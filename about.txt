@@ -14,3 +14,4 @@ components:
 * QtIconloader http://code.google.com/p/qticonloader/
 * QScintilla2 http://www.riverbankcomputing.co.uk/software/qscintilla/
 
+BUILD_FLAGS_STRING
