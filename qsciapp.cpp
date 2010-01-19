@@ -19,6 +19,7 @@ QsciApp::QsciApp(const QString fileName, unsigned int line)
 	blockCommentStartString = "";
 	blockCommentMiddleString = "";
 	blockCommentEndString = "";
+	curFileInfo = NULL;
 	fileProvided = false;
 	editorSettings = new EditorSettings;
 
@@ -49,6 +50,13 @@ QsciApp::QsciApp(const QString fileName, unsigned int line)
 	connect(textEdit, SIGNAL(modificationChanged(bool)),
 		this, SLOT(documentModified(bool)));
 
+	connect(this, SIGNAL(applicationFocusIn()),
+		this, SLOT(checkModifiedOnDisk()));
+
+	// applicationFocusIn is emitted by the event filter in this class. So
+	// make sure to install the event filter.
+	if (qApp)
+		qApp->installEventFilter(this);
 }
 
 QString QsciApp::getLineCommentString()
@@ -111,6 +119,17 @@ void QsciApp::dropEvent(QDropEvent *event)
 		}
 		event->acceptProposedAction();
 	}
+}
+
+bool QsciApp::eventFilter(QObject *object, QEvent *event)
+{
+	if (qApp == object) {
+		if (event->type() == QEvent::ApplicationActivate) {
+			checkModifiedOnDisk();
+			emit applicationFocusIn();
+		}
+	}
+	return QMainWindow::eventFilter(object, event);
 }
 
 void QsciApp::documentModified(bool modified)
@@ -279,14 +298,19 @@ void QsciApp::open()
 	}
 }
 
+void QsciApp::doReload()
+{
+	int line, index;
+	textEdit->getCursorPosition(&line, &index);
+	loadFile(curFile);
+	gotoLine(line+1, index);
+}
+
 void QsciApp::reload()
 {
 	if (!curFile.isEmpty()) {
-		if (saveIfModified()) {
-			int line, index;
-			textEdit->getCursorPosition(&line, &index);
-			loadFile(curFile);
-			gotoLine(line+1, index);
+		if(saveIfModified()) {
+			doReload();
 		}
 	}
 }
@@ -423,11 +447,16 @@ void QsciApp::setCurrentFile(const QString &fileName)
 	textEdit->setModified(false);
 	setWindowModified(false);
 
+	if (curFileInfo)
+		delete curFileInfo;
+
 	QString shownName;
-	if (curFile.isEmpty())
+	if (curFile.isEmpty()) {
 		shownName = "untitled";
-	else
-		shownName = QFileInfo(curFile).fileName();
+	} else {
+		curFileInfo = new QFileInfo(curFile);
+		shownName = curFileInfo->fileName();
+	}
 
 	setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(APPLICATION_NAME));
 	textEdit->setLexer(LexerSelector::getLexerForFile(fileName,
@@ -484,4 +513,56 @@ void QsciApp::applySettings()
 	setBraceMatching(editorSettings->displayBraceMatch());
 	setWrapText(editorSettings->displayWrapText());
 	setHighlightCurrentLine(editorSettings->highlightCurrentLine());
+}
+
+void QsciApp::askReload()
+{
+	int  ret = QMessageBox::warning(this, "File Changed On Disk",
+			tr("The file has changed on disk.\n"
+			   "Do you want to reload the file now?"),
+			QMessageBox::Yes | QMessageBox::No,
+			QMessageBox::No);
+	if (ret == QMessageBox::Yes) {
+		doReload();
+	} else {
+		curFileInfo->refresh();
+	}
+}
+
+void QsciApp::askReloadOrKeep()
+{
+	int  ret = QMessageBox::warning(this, "File Changed On Disk",
+			tr("The file has changed on disk and there are unsaved changes.\n"
+			   "Do you want to save the current changes, ignore the changes\n"
+			   "on disk or discard the current changes?"),
+			QMessageBox::Discard | QMessageBox::Save | QMessageBox::Ignore,
+			QMessageBox::Ignore);
+
+	switch (ret) {
+	case QMessageBox::Discard:
+		doReload();
+		break;
+	case QMessageBox::Save:
+		save();
+		break;
+	case QMessageBox::Ignore:
+		curFileInfo->refresh();
+		break;
+	}
+}
+
+void QsciApp::checkModifiedOnDisk()
+{
+	if (curFile.isEmpty()) {
+		return;
+	}
+
+	QFileInfo info = QFileInfo(curFile);
+	if (info.lastModified() != curFileInfo->lastModified()) {
+		if (textEdit->isModified()) {
+			askReloadOrKeep();
+		} else {
+			askReload();
+		}
+	}
 }

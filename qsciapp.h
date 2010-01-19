@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 class QLineEdit;
+class QFileInfo;
 class QsciScintilla;
 class FindDialog;
 class Actions;
@@ -35,12 +36,16 @@ public slots:
 	void about();
 	void gotoLine(int, int=0);
 
+signals:
+	void applicationFocusIn();
+
 protected:
 	void closeEvent(QCloseEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dragMoveEvent(QDragMoveEvent *event);
 	void dragLeaveEvent(QDragLeaveEvent *event);
 	void dropEvent(QDropEvent *event);
+	bool eventFilter(QObject *object, QEvent *event);
 
 private slots:
 	void documentModified(bool);
@@ -55,6 +60,7 @@ private slots:
 	void setWrapText(bool);
 	void lineComment();
 	void blockComment();
+	void checkModifiedOnDisk();
 
 private:
 	void createActions();
@@ -69,10 +75,14 @@ private:
 	void loadSettings();
 	void saveSettings();
 	void applySettings();
+	void doReload();
+	void askReload();
+	void askReloadOrKeep();
 
 	QsciScintilla *textEdit;
 	Actions *actions;
 	QString curFile;
+	QFileInfo *curFileInfo;
 	FindDialog *findDialog;
 
 	QString lineCommentString;
