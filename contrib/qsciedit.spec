@@ -55,7 +55,31 @@ make %{?jobs:-j%jobs} release
 unset VERSION
 
 %install
-make install INSTALL_ROOT=$RPM_BUILD_ROOT
+# Install the application
+%makeinstall INSTALL_ROOT=$RPM_BUILD_ROOT
+
+# Desktop Entry
+cat > %{name}.desktop << EOF
+[Desktop Entry]
+Name=QsciEdit
+Comment=%{summary}
+GenericName=Text Editor
+MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-c;text/x-c++;text/x-java;application/x-shellscript;
+Exec=%{name} %u
+Icon=%{name}
+Type=Application
+EOF
+
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install                          \
+  --dir %{buildroot}%{_datadir}/applications  \
+  --add-category Utility                      \
+  --add-category TextEditor                   \
+  %{name}.desktop
+
+# Icon
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/
+cp %{name}.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -65,7 +89,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-/usr/bin/%{name}
+%{_prefix}/bin/%{name}
+%{_datadir}/applications/%{name}.desktop
+%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
 %changelog
 * Sat Jan 16 2010 judge.packham@gmail.com
