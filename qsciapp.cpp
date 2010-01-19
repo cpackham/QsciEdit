@@ -447,8 +447,10 @@ void QsciApp::setCurrentFile(const QString &fileName)
 	textEdit->setModified(false);
 	setWindowModified(false);
 
-	if (curFileInfo)
+	if (curFileInfo) {
 		delete curFileInfo;
+		curFileInfo = NULL;
+	}
 
 	QString shownName;
 	if (curFile.isEmpty()) {
@@ -497,7 +499,7 @@ void QsciApp::saveSettings()
 	textEdit->getCursorPosition(&line, &index);
 	settings.setValue("pos", pos());
 	settings.setValue("size", size());
-	settings.setValue("file", curFile);
+	settings.setValue("file", curFileInfo ? curFileInfo->absoluteFilePath() : "");
 	settings.setValue("CursorLine", line);
 	settings.setValue("CursorIndex", index);
 	editorSettings->save();
