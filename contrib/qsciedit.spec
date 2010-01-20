@@ -78,8 +78,8 @@ desktop-file-install                          \
   %{name}.desktop
 
 # Icon
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/
-cp %{name}.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/
+cp %{name}.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -91,7 +91,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %{_prefix}/bin/%{name}
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
+%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
 
 %changelog
 * Sat Jan 16 2010 judge.packham@gmail.com
