@@ -2,5 +2,6 @@
 <qresource>
 	<file>about.html</file>
 	<file>qsciedit.svg</file>
+	<file>qsciedit.png</file>
 </qresource>
 </RCC>
