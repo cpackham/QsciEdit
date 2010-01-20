@@ -480,11 +480,27 @@ void QsciApp::setCurrentFile(const QString &fileName)
 	}
 
 	setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(APPLICATION_NAME));
-	textEdit->setLexer(LexerSelector::getLexerForFile(fileName,
+
+	QsciLexer *lexer = NULL;
+
+	lexer = LexerSelector::getLexerForFile(fileName,
 			&lineCommentString,
 			&blockCommentStartString,
 			&blockCommentMiddleString,
-			&blockCommentEndString));
+			&blockCommentEndString);
+
+	// Try to determine from hash bang
+	if (!lexer) {
+		QString text = textEdit->text(0);
+		lexer = LexerSelector::getLexerForText(text,
+			&lineCommentString,
+			&blockCommentStartString,
+			&blockCommentMiddleString,
+			&blockCommentEndString);
+		
+	}
+
+	textEdit->setLexer(lexer);
 	if (textEdit->lexer()) {
 		QFont font = QFont("Monospaced, Courier", 10);
 		textEdit->lexer()->setDefaultFont(font);

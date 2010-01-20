@@ -40,6 +40,12 @@ public:
 		QString *blockCommentMiddleString,
 		QString *blockCommentEndString);
 
+	static QsciLexer* getLexerForText(const QString &text,
+		QString *lineCommentString,
+		QString *blockCommentStartString,
+		QString *blockCommentMiddleString,
+		QString *blockCommentEndString);
+
 	static QsciLexer* getLexerById(int id,
 		QString *lineCommentString,
 		QString *blockCommentStartString,
@@ -48,6 +54,7 @@ public:
 
 private:
 	static QList<LexerData> lexerInfo;
+	static QList<LexerData> lexerTextInfo;
 };
 
 #endif

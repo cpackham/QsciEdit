@@ -40,6 +40,19 @@ QList<LexerData> initFileData()
 
 QList<LexerData> LexerSelector::lexerInfo(initFileData());
 
+QList<LexerData> initTextData()
+{
+	QList<LexerData> list;
+	list 
+  		<< LexerData("/bin/sh;/bin/bash", LexerBash)
+  		<< LexerData("/bin/perl;/usr/bin/perl", LexerPerl)
+  		<< LexerData("/usr/bin/python", LexerPerl);
+	return list;
+	
+}
+
+QList<LexerData> LexerSelector::lexerTextInfo(initTextData());
+
 QsciLexer* LexerSelector::getLexerForFile(const QString &fileName,
 		QString *lineCommentString, QString *blockCommentStartString,
 		QString *blockCommentMiddleString, QString *blockCommentEndString)
@@ -59,6 +72,33 @@ QsciLexer* LexerSelector::getLexerForFile(const QString &fileName,
 
 			if (rx.exactMatch(fileName)) {
 				qDebug() << __FUNCTION__  << fileName << " matches" << *iter;
+				id = lexerData.id;
+				return getLexerById(id,lineCommentString,
+					blockCommentStartString, 
+					blockCommentMiddleString, 
+					blockCommentEndString);
+			}
+		}
+	}
+
+	return NULL;
+}
+
+QsciLexer* LexerSelector::getLexerForText(const QString &text,
+		QString *lineCommentString, QString *blockCommentStartString,
+		QString *blockCommentMiddleString, QString *blockCommentEndString)
+{
+	LexerID id;
+	QList<LexerData>::iterator l_iter;
+	for (l_iter = lexerTextInfo.begin(); l_iter != lexerTextInfo.end(); l_iter++) {
+
+		LexerData lexerData = *l_iter;
+		QStringList list = lexerData.pattern.split(";");
+
+		QStringList::iterator iter;
+		for( iter = list.begin(); iter != list.end(); iter++){
+			if (text.contains(*iter)) {
+				qDebug() << __FUNCTION__  << text << " matches" << *iter;
 				id = lexerData.id;
 				return getLexerById(id,lineCommentString,
 					blockCommentStartString, 
