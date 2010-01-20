@@ -1,16 +1,13 @@
 #include <QString>
 #include "version.h"
 
-Version::Version()
-{
-	versionString = "QsciEdit version @@VERSION@@";
-	buildDate = "Built on @@DATE@@";
+QString versionString ("QsciEdit version @@VERSION@@");
+QString buildDate ("Built on @@DATE@@");
 #ifdef DEBUG
-	buildFlags = "Build Flags: Debug Mode";
+QString buildFlags ("Build Flags: DEBUG");
 #else
-	buildFlags = "";
+QString buildFlags ("");
 #endif
-}
 
 QString Version::getVersionString()
 {

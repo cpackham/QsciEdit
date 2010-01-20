@@ -344,7 +344,6 @@ void QsciApp::about()
 {
 	QFile file(":/about.html");
 	QString data;
-	Version version;
 
 	if(file.open(QFile::ReadOnly | QFile::Text)) {
 		QTextStream in(&file);
@@ -353,7 +352,7 @@ void QsciApp::about()
 
 	QMessageBox::about(this,
 		tr("About %1").arg(APPLICATION_NAME),
-		version.versionText(data));
+		Version::versionText(data));
 }
 
 void QsciApp::gotoLine(int line, int index)

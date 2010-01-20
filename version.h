@@ -4,16 +4,10 @@
 class QString;
 class Version {
 public:
-	Version();
-	QString getVersionString();
-	QString getBuildDate();
-	QString getBuildFlagsString();
-	QString versionText(QString input);
-
-private:
-	QString versionString;
-	QString buildDate;
-	QString buildFlags;
+	static QString getVersionString();
+	static QString getBuildDate();
+	static QString getBuildFlagsString();
+	static QString versionText(QString input);
 };
 
 #endif
