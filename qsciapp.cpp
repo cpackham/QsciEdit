@@ -14,6 +14,7 @@
 QsciApp::QsciApp(const QString fileName, unsigned int line)
 {
 	textEdit = new QsciScintilla;
+	textEdit->setFont(QFont("Monospaced, Courier", 10));
 	findDialog = NULL;
 	lineCommentString = "";
 	blockCommentStartString = "";
