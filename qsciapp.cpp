@@ -210,6 +210,12 @@ void QsciApp::setHighlightCurrentLine(bool enable)
 	editorSettings->setHighlightCurrentLine(enable);
 }
 
+void QsciApp::setAutoIndent(bool enable)
+{
+	textEdit->setAutoIndent(enable);
+	editorSettings->setAutoIndent(enable);
+}
+
 void QsciApp::askForLine()
 {
 	int line, index;
@@ -516,6 +522,7 @@ void QsciApp::applySettings()
 	setBraceMatching(editorSettings->displayBraceMatch());
 	setWrapText(editorSettings->displayWrapText());
 	setHighlightCurrentLine(editorSettings->highlightCurrentLine());
+	setAutoIndent(editorSettings->autoIndent());
 }
 
 void QsciApp::askReload()

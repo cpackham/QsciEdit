@@ -170,6 +170,10 @@ void Actions::setupActions()
 		tr("Highlight matching pairs of braces"),
 		setBraceMatching(bool), 
 		application()->editorSettings->displayBraceMatch());
+	checkable_act(autoIndentAct, tr("Auto Indent"),
+		tr("Automatically indent"),
+		setAutoIndent(bool), 
+		application()->editorSettings->autoIndent());
 	
 	// Help actions
 	aboutAct = new QAction(QtIconLoader::icon("help-about"), "&About", application());
@@ -225,6 +229,7 @@ void Actions::setupMenus()
 	settingsMenu->addAction(foldAct);
 	settingsMenu->addAction(autoCompAct);
 	settingsMenu->addAction(braceMatchAct);
+	settingsMenu->addAction(autoIndentAct);
 
 	application()->menuBar()->addSeparator();
 	helpMenu = application()->menuBar()->addMenu(tr("&Help"));

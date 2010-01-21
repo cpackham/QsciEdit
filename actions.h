@@ -77,6 +77,7 @@ private:
 	QAction *foldAct;
 	QAction *autoCompAct;
 	QAction *braceMatchAct;
+	QAction *autoIndentAct;
 
 	QAction *aboutAct;
 	QAction *aboutQtAct;

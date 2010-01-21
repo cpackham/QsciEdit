@@ -25,6 +25,7 @@ void EditorSettings::load()
 	setAutoComplete(qsettings.value("auto completion", false).toBool());
 	setAutoCompleteThreshold(qsettings.value("auto completion threshold", 3).toInt());
 	setHighlightCurrentLine(qsettings.value("HighlightCurrentLine", false).toBool());
+	setAutoIndent(qsettings.value("AutoIndent", false).toBool());
 	qsettings.endGroup();
 }
 
@@ -40,5 +41,6 @@ void EditorSettings::save()
 	qsettings.setValue("auto completion",displayAutoComplete());
 	qsettings.setValue("auto completion threshold",autoCompleteThreshold());
 	qsettings.setValue("HighlightCurrentLine", highlightCurrentLine());
+	qsettings.setValue("AutoIndent", autoIndent());
 	qsettings.endGroup();
 }

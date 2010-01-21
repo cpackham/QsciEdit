@@ -28,6 +28,8 @@ public:
 	void setBraceMatch(bool b)  { bracematch = b; };
 	bool highlightCurrentLine() { return highlightcurrent; };
 	void setHighlightCurrentLine(bool b) { highlightcurrent = b; };
+	bool autoIndent()           { return autoindent; };
+	void setAutoIndent(bool b)  { autoindent = b; };
 
 private:
 	bool linenumbers;
@@ -38,6 +40,7 @@ private:
 	int  autocompletethresh;
 	bool bracematch;
 	bool highlightcurrent;
+	bool autoindent;
 };
 
 

@@ -56,6 +56,7 @@ private slots:
 	void setAutoCompletion(bool, int);
 	void setBraceMatching(bool);
 	void setHighlightCurrentLine(bool);
+	void setAutoIndent(bool);
 	void askForLine();
 	void setWrapText(bool);
 	void lineComment();
