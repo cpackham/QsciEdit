@@ -26,6 +26,8 @@ void EditorSettings::load()
 	setAutoCompleteThreshold(qsettings.value("auto completion threshold", 3).toInt());
 	setHighlightCurrentLine(qsettings.value("HighlightCurrentLine", false).toBool());
 	setAutoIndent(qsettings.value("AutoIndent", false).toBool());
+	setDisplayEdge(qsettings.value("DisplayEdge", false).toBool());
+	setEdgeColumn(qsettings.value("EdgeColumn", 80).toInt());
 	qsettings.endGroup();
 }
 
@@ -42,5 +44,7 @@ void EditorSettings::save()
 	qsettings.setValue("auto completion threshold",autoCompleteThreshold());
 	qsettings.setValue("HighlightCurrentLine", highlightCurrentLine());
 	qsettings.setValue("AutoIndent", autoIndent());
+	qsettings.setValue("DisplayEdge", displayEdge());
+	qsettings.setValue("EdgeColumn", edgeColumn());
 	qsettings.endGroup();
 }

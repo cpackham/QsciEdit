@@ -57,6 +57,7 @@ private slots:
 	void setBraceMatching(bool);
 	void setHighlightCurrentLine(bool);
 	void setAutoIndent(bool);
+	void setDisplayEdge(bool, int col=80);
 	void askForLine();
 	void setWrapText(bool);
 	void lineComment();

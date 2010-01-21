@@ -216,6 +216,18 @@ void QsciApp::setAutoIndent(bool enable)
 	editorSettings->setAutoIndent(enable);
 }
 
+void QsciApp::setDisplayEdge(bool enable, int col)
+{
+	if (enable) {
+		textEdit->setEdgeMode(QsciScintilla::EdgeLine);
+		textEdit->setEdgeColumn(col);
+	} else {
+		textEdit->setEdgeMode(QsciScintilla::EdgeNone);
+	}
+	editorSettings->setDisplayEdge(enable);
+	editorSettings->setEdgeColumn(col);
+}
+
 void QsciApp::askForLine()
 {
 	int line, index;
@@ -523,6 +535,8 @@ void QsciApp::applySettings()
 	setWrapText(editorSettings->displayWrapText());
 	setHighlightCurrentLine(editorSettings->highlightCurrentLine());
 	setAutoIndent(editorSettings->autoIndent());
+	setDisplayEdge(editorSettings->displayEdge(),
+			editorSettings->edgeColumn());
 }
 
 void QsciApp::askReload()

@@ -73,6 +73,7 @@ private:
 	QAction *wrapTextAct;
 	QAction *hlCurrentAct;
 	QAction *foldAllAct;
+	QAction *edgeAct;
 
 	QAction *foldAct;
 	QAction *autoCompAct;

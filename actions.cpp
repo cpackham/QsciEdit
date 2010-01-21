@@ -155,6 +155,11 @@ void Actions::setupActions()
 	foldAllAct->setStatusTip(tr("Folds or unfolds all lines"));
 	connect(foldAllAct, SIGNAL(triggered()), application()->editor(), SLOT(foldAll()));
 	foldAllAct->setEnabled(application()->editorSettings->displayCodeFolding());
+
+	checkable_act(edgeAct, tr("Indicate Edge Column"),
+		tr("Display a line marking the edge column"),
+		setDisplayEdge(bool),
+		application()->editorSettings->displayEdge());
 	
 	// Settings
 	checkable_act(foldAct, tr("Code Folding"), 
@@ -222,6 +227,7 @@ void Actions::setupMenus()
 	viewMenu->addAction(whiteSpaceAct);
 	viewMenu->addAction(wrapTextAct);
 	viewMenu->addAction(hlCurrentAct);
+	viewMenu->addAction(edgeAct);
 	viewMenu->addSeparator();
 	viewMenu->addAction(foldAllAct);
 

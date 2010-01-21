@@ -30,6 +30,10 @@ public:
 	void setHighlightCurrentLine(bool b) { highlightcurrent = b; };
 	bool autoIndent()           { return autoindent; };
 	void setAutoIndent(bool b)  { autoindent = b; };
+	bool displayEdge()          { return edgeindication; };
+	void setDisplayEdge(bool b) { edgeindication = b; };
+	int  edgeColumn()           { return edgecol; };
+	void setEdgeColumn(int i)   { edgecol = i; };
 
 private:
 	bool linenumbers;
@@ -41,6 +45,8 @@ private:
 	bool bracematch;
 	bool highlightcurrent;
 	bool autoindent;
+	bool edgeindication;
+	int  edgecol;
 };
 
 
