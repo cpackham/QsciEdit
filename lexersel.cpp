@@ -25,16 +25,16 @@ QList<LexerData> initFileData()
  		<< LexerData("*.c;*.h;*.cpp;*.cc", LexerCPP)
   		<< LexerData("*.java", LexerJava)
   		<< LexerData("*.js", LexerJavaScript)
-  		<< LexerData("*.sh;*.bash;", LexerBash)
-  		<< LexerData("*.mk;Makefile*;", LexerMakefile)
+  		<< LexerData("*.sh;*.bash", LexerBash)
+  		<< LexerData("*.mk;Makefile*", LexerMakefile)
   		<< LexerData("*.pro", LexerCMake)
   		<< LexerData("*.py", LexerPython)
-  		<< LexerData("*.patch;*.diff;patch.txt;", LexerDiff)
+  		<< LexerData("*.patch;*.diff;patch.txt", LexerDiff)
   		<< LexerData("*.tcl", LexerTCL)
   		<< LexerData("*.pl;*.pm", LexerPerl)
   		<< LexerData("*.html;*.xhtml", LexerHTML)
   		<< LexerData("*.css", LexerCSS)
-  		<< LexerData("*.txt;", LexerAsciiDoc);
+  		<< LexerData("*.txt", LexerAsciiDoc);
  
 	return list;
 }
@@ -72,7 +72,8 @@ QsciLexer* LexerSelector::getLexerForFile(const QString &fileName,
 			rx.setPatternSyntax(QRegExp::Wildcard);
 
 			if (rx.exactMatch(fileName)) {
-				qDebug() << __FUNCTION__  << fileName << " matches" << *iter;
+				qDebug() << __FUNCTION__  << fileName << " matches" << *iter 
+					 << " using lexer" << lexerData.id;
 				id = lexerData.id;
 				return getLexerById(id,lineCommentString,
 					blockCommentStartString, 
@@ -99,7 +100,8 @@ QsciLexer* LexerSelector::getLexerForText(const QString &text,
 		QStringList::iterator iter;
 		for( iter = list.begin(); iter != list.end(); iter++){
 			if (text.contains(*iter)) {
-				qDebug() << __FUNCTION__  << text << " matches" << *iter;
+				qDebug() << __FUNCTION__  << text << " matches" << *iter
+					 << " using lexer" << lexerData.id;
 				id = lexerData.id;
 				return getLexerById(id,lineCommentString,
 					blockCommentStartString, 
