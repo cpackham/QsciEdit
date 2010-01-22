@@ -86,6 +86,14 @@ private:
 	QString curFile;
 	QFileInfo *curFileInfo;
 	FindDialog *findDialog;
+	struct FileArgs {
+		QString fileName;
+		int line;
+		int index;
+	};
+	
+	FileArgs commandLineFile; // File specified on the command line
+	FileArgs settingsFile;    // File saved in the confguration
 
 	QString lineCommentString;
 	QString blockCommentStartString;

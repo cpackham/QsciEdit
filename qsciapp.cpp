@@ -11,8 +11,13 @@
 #include "editorsettings.h"
 #include "version.h"
 
-QsciApp::QsciApp(const QString fileName, unsigned int line)
+QsciApp::QsciApp(const QString fileArg, unsigned int lineArg)
 {
+	QString fileName = "";
+	int line = 1;
+	int index = 0;
+
+	setWindowTitle(tr("[*] - %1").arg(APPLICATION_NAME));
 	textEdit = new QsciScintilla;
 	textEdit->setFont(QFont("Monospaced, Courier", 10));
 	findDialog = NULL;
@@ -21,12 +26,14 @@ QsciApp::QsciApp(const QString fileName, unsigned int line)
 	blockCommentMiddleString = "";
 	blockCommentEndString = "";
 	curFileInfo = NULL;
-	fileProvided = false;
 	editorSettings = new EditorSettings;
+	commandLineFile.fileName = fileArg;
+	commandLineFile.line = lineArg;
+	commandLineFile.index = 0;
 
 	// Order here is important
 	createStatusBar();
-	setCurrentFile(fileName);
+	
 
 	if (!fileName.isEmpty()) {
 		fileProvided = true;
@@ -39,6 +46,7 @@ QsciApp::QsciApp(const QString fileName, unsigned int line)
 
 	loadSettings();
 	applySettings();
+	
 	actions = new Actions(this);
 	setAcceptDrops(true);
 	setCentralWidget(textEdit);
@@ -59,6 +67,26 @@ QsciApp::QsciApp(const QString fileName, unsigned int line)
 	// make sure to install the event filter.
 	if (qApp)
 		qApp->installEventFilter(this);
+
+	// Load up the file
+	if (!commandLineFile.fileName.isEmpty()) {
+		fileName = commandLineFile.fileName;
+		line = commandLineFile.line;
+	} else if (!settingsFile.fileName.isEmpty()) {
+		fileName = settingsFile.fileName;
+		line = settingsFile.line;
+		index = settingsFile.index;
+	}
+
+	if (fileName.isEmpty()) {
+		setCurrentFile(fileName);
+	} else if (fileName == "-") {
+		loadStdIn();
+	} else {
+		loadFile(fileName);
+	}
+	
+	gotoLine(line, index);
 }
 
 QString QsciApp::getLineCommentString()
@@ -416,6 +444,7 @@ void QsciApp::loadFile(const QString &fileName)
 			tr("Cannot read file %1:\n%2.")
 			.arg(fileName)
 			.arg(file.errorString()));
+		setCurrentFile(fileName);
 		return;
 	}
 
@@ -519,12 +548,12 @@ void QsciApp::loadSettings()
 	LexerSelector::loadLexerSettings();
 	editorSettings->load();
 
+	settingsFile.fileName = file;
+	settingsFile.line     = line+1;
+	settingsFile.index    = index;
+	
 	move (pos);
 	resize(size);
-	if (!fileProvided && !file.isEmpty()) {
-		loadFile(file);
-		gotoLine(line+1, index);
-	}
 }
 
 void QsciApp::saveSettings()
