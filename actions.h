@@ -2,9 +2,11 @@
 #define ACTIONS_H
 
 #include <QObject>
+#include <QList>
 
 class QsciApp;
 class QAction;
+class QString;
 class QMenu;
 class QToolBar;
 class QLineEdit;
@@ -46,39 +48,19 @@ private:
 	QToolBar *findToolBar;
 	QLineEdit *findEntry;
 
-	QAction *newAct;
-	QAction *openAct;
-	QAction *reloadAct;
-	QAction *saveAct;
-	QAction *saveAsAct;
-	QAction *exitAct;
+	QList<QAction*> fileItems;
 
-	QAction *undoAct;
-	QAction *redoAct;
-	QAction *cutAct;
-	QAction *copyAct;
-	QAction *pasteAct;
-	QAction *gotoLineAct;
-	QAction *gotoBraceAct;
-	QAction *selectBraceAct;
+	QList<QAction*> editItemsUR;
+	QList<QAction*> editItemsCCP;
 	QAction *findAct;
 	QAction *findPrevAct;
 	QAction *findNextAct;
-	QAction *lineCommentAct;
-	QAction *blockCommentAct;
-	QAction *suggestCompletion;
+	QList<QAction*> editItemsMisc;
 
-	QAction *lineNumAct;
-	QAction *whiteSpaceAct;
-	QAction *wrapTextAct;
-	QAction *hlCurrentAct;
+	QList<QAction*> viewItems;
 	QAction *foldAllAct;
-	QAction *edgeAct;
 
-	QAction *foldAct;
-	QAction *autoCompAct;
-	QAction *braceMatchAct;
-	QAction *autoIndentAct;
+	QList<QAction*> settingsItems;
 
 	QAction *aboutAct;
 	QAction *aboutQtAct;

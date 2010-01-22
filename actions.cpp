@@ -20,78 +20,81 @@ Actions::~Actions()
 
 void Actions::setupActions()
 {
-#define new_action(act, shortstr, longstr, keyseq, slot, icon) \
+	QAction *act;
+#define newActionWithIcon(list, shortstr, longstr, keyseq, slot, icon) \
 	act = new QAction(icon, shortstr, application()); \
 	act->setShortcuts(keyseq); \
 	act->setStatusTip(longstr); \
-	connect(act, SIGNAL(triggered()), application(), SLOT(slot))
+	connect(act, SIGNAL(triggered()), application(), SLOT(slot));\
+	list << act
+
+#define newAction(list, shortstr, longstr, key, slot) \
+	act = new QAction(shortstr, application()); \
+	act->setShortcut(key); \
+	act->setStatusTip(longstr); \
+	connect(act, SIGNAL(triggered()), application(), SLOT(slot));\
+	list << act
+
+#define checkableAction(list, shortstr, longstr, slot, enable) \
+	act = new QAction(shortstr, application()); \
+	act->setStatusTip(longstr); \
+	act->setCheckable(true); \
+	act->setChecked(enable); \
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(slot)); \
+	list << act
+
 
 	// File actions
-	new_action(newAct,tr("&New"),
+	newActionWithIcon(fileItems,tr("&New"),
 			tr("Create a new file"), 
 			QKeySequence::New,newFile(),
 			QtIconLoader::icon("document-new"));
-	new_action(openAct, tr("&Open"),
+	newActionWithIcon(fileItems, tr("&Open"),
 			tr("Open an existing file"),
 			QKeySequence::Open,open(),
 			QtIconLoader::icon("document-open"));
-	new_action(reloadAct, tr("&Reload"),
+	newActionWithIcon(fileItems, tr("&Reload"),
 			tr("Reload the current file"),
 			QKeySequence::Refresh,reload(),
 			QtIconLoader::icon("view-refresh"));
-	new_action(saveAct,tr("&Save"),
+	newActionWithIcon(fileItems, tr("&Save"),
 			tr("Save the current file"),
 			QKeySequence::Save,save(),
 			QtIconLoader::icon("document-save"));
-	new_action(saveAsAct,tr("Save &As"),
+	newActionWithIcon(fileItems, tr("Save &As"),
 			tr("Save the current file with a new name"),
 			QKeySequence::SaveAs,saveAs(),
 			QtIconLoader::icon("document-save-as"));
 
 	// Edit actions
-	new_action(undoAct, tr("&Undo"),
+	newActionWithIcon(editItemsUR, tr("&Undo"),
 			tr("Undo last edit"),
 			QKeySequence::Undo,undo(),
 			QtIconLoader::icon("edit-undo"));
-	new_action(redoAct, tr("&Redo"),
+	newActionWithIcon(editItemsUR, tr("&Redo"),
 			tr("Redo last edit"),
 			QKeySequence::Redo,redo(),
 			QtIconLoader::icon("edit-redo"));
-	new_action(cutAct, tr("Cu&t"),
+	newActionWithIcon(editItemsCCP, tr("Cu&t"),
 			tr("Cut the selected text"),
 			QKeySequence::Cut,cut(),
 			QtIconLoader::icon("edit-cut"));
-	cutAct->setEnabled(false);
+	act->setEnabled(false);
+	connect(application()->editor(), SIGNAL(copyAvailable(bool)),
+		act, SLOT(setEnabled(bool)));
 
-	new_action(copyAct, tr("&Copy"),
+	newActionWithIcon(editItemsCCP, tr("&Copy"),
 			tr("Copy the selected text to the clipboard"),
 			QKeySequence::Copy,copy(),
 			QtIconLoader::icon("edit-copy"));
-	copyAct->setEnabled(false);
+	act->setEnabled(false);
 	connect(application()->editor(), SIGNAL(copyAvailable(bool)),
-		cutAct, SLOT(setEnabled(bool)));
-	connect(application()->editor(), SIGNAL(copyAvailable(bool)),
-		copyAct, SLOT(setEnabled(bool)));
+		act, SLOT(setEnabled(bool)));
 
-	new_action(pasteAct, tr("&Paste"),
+	newActionWithIcon(editItemsCCP, tr("&Paste"),
 			tr("Paste text from the clipboard"),
 			QKeySequence::Paste,paste(),
 			QtIconLoader::icon("edit-paste"));
-
-	gotoLineAct = new QAction(tr("&Goto Line"), application());
-	gotoLineAct->setStatusTip(tr("Jump to a line number"));
-	gotoLineAct->setShortcut(tr("Ctrl+G"));
-	connect(gotoLineAct, SIGNAL(triggered()), application(), SLOT(askForLine()));
-
-	gotoBraceAct = new QAction(tr("Goto matching brace"), application());
-	gotoBraceAct->setStatusTip(tr("Jump to the matching brace"));
-	gotoBraceAct->setShortcut(tr("Ctrl+E"));
-	connect(gotoBraceAct, SIGNAL(triggered()), application()->editor(), SLOT(moveToMatchingBrace()));
-
-	selectBraceAct = new QAction(tr("Select matching brace"), application());
-	selectBraceAct->setStatusTip(tr("Select to matching brace"));
-	selectBraceAct->setShortcut(tr("Ctrl+Shift+E"));
-	connect(selectBraceAct, SIGNAL(triggered()), application()->editor(), SLOT(selectToMatchingBrace()));
 
 	findAct = new QAction(QtIconLoader::icon("edit-find"), tr("&Find..."), application());
 	findAct->setStatusTip(tr("Search for text"));
@@ -102,80 +105,85 @@ void Actions::setupActions()
 	findPrevAct->setStatusTip(tr("Repeat the last search"));
 	findPrevAct->setShortcuts(QKeySequence::FindPrevious);
 	connect(findPrevAct, SIGNAL(triggered()), this, SLOT(findPrev()));
-	// findPrevAct->setEnabled(false);
 
 	findNextAct = new QAction(QtIconLoader::icon("go-next"),tr("Find &Next"), application());
 	findNextAct->setStatusTip(tr("Repeat the last search"));
 	findNextAct->setShortcuts(QKeySequence::FindNext);
 	connect(findNextAct, SIGNAL(triggered()), this, SLOT(findNext()));
-	// findNextAct->setEnabled(false);
 
-	lineCommentAct = new QAction(tr("Line Comment"), application());
-	lineCommentAct->setStatusTip(tr("Comment out lines"));
-	lineCommentAct->setShortcut(tr("Ctrl+D"));
-	connect(lineCommentAct, SIGNAL(triggered()), application(), SLOT(lineComment()));
+	newAction(editItemsMisc, tr("&Goto Line"), 
+		tr("Jump to a line number"), tr("Ctrl+G"), askForLine());
 
-	blockCommentAct = new QAction(tr("Block Comment"), application());
-	blockCommentAct->setStatusTip(tr("Comment out the selected block of text"));
-	blockCommentAct->setShortcut(tr("Ctrl+Shift+D"));
-	connect(blockCommentAct, SIGNAL(triggered()), application(), SLOT(blockComment()));
+	act = new QAction(tr("Goto matching brace"), application());
+	act->setStatusTip(tr("Jump to the matching brace"));
+	act->setShortcut(tr("Ctrl+E"));
+	connect(act, SIGNAL(triggered()), application()->editor(), SLOT(moveToMatchingBrace()));
+	editItemsMisc << act;
 
-	suggestCompletion = new QAction(tr("Suggest Completion"), application());
-	suggestCompletion->setStatusTip(tr("Suggest a completion based on the current text"));
-	suggestCompletion->setShortcut(tr("Ctrl+Space"));
-	connect(suggestCompletion, SIGNAL(triggered()), application()->editor(), SLOT(autoCompleteFromAll()));
+	act = new QAction(tr("Select matching brace"), application());
+	act->setStatusTip(tr("Select to matching brace"));
+	act->setShortcut(tr("Ctrl+Shift+E"));
+	connect(act, SIGNAL(triggered()), application()->editor(), SLOT(selectToMatchingBrace()));
+	editItemsMisc << act;
 
-#define checkable_act(act, shortstr, longstr, slot, enable) \
-	act = new QAction(shortstr, application()); \
-	act->setStatusTip(longstr); \
-	act->setCheckable(true); \
-	act->setChecked(enable); \
-	connect(act, SIGNAL(triggered(bool)), application(), SLOT(slot))
+	newAction(editItemsMisc, tr("Line Comment"), 
+		tr("Comment out lines"), tr("Ctrl+D"), lineComment());
+
+	newAction(editItemsMisc, tr("Block Comment"),
+		tr("Comment out the selected block of text"), 
+		tr("Ctrl+Shift+D"), blockComment());
+
+	act = new QAction(tr("Suggest Completion"), application());
+	act->setStatusTip(tr("Suggest a completion based on the current text"));
+	act->setShortcut(tr("Ctrl+Space"));
+	connect(act, SIGNAL(triggered()), application()->editor(), SLOT(autoCompleteFromAll()));
+	editItemsMisc << act;
 
 	// View
-	checkable_act(lineNumAct, tr("Line Numbers"),
+	checkableAction(viewItems, tr("Line Numbers"),
 		tr("Display line numbers in the margin"),
 		setLineNumbers(bool),
 		application()->editorSettings->displayLineNumbers());
-	checkable_act(whiteSpaceAct, tr("White space"),
+	checkableAction(viewItems, tr("White space"),
 		tr("Make white space visible"),
 		setWhiteSpaceVis(bool),
 		application()->editorSettings->displayWhitespace());
-	checkable_act(wrapTextAct, tr("Wrap Text"),
+	checkableAction(viewItems, tr("Wrap Text"),
 		tr("Wrap text"),
 		setWrapText(bool),
 		application()->editorSettings->displayWrapText());
 
-	checkable_act(hlCurrentAct, tr("Highlight Current Line"),
+	checkableAction(viewItems, tr("Highlight Current Line"),
 		tr("Highlight Current Line"),
 		setHighlightCurrentLine(bool),
 		application()->editorSettings->highlightCurrentLine());
+
+	checkableAction(viewItems, tr("Indicate Edge Column"),
+		tr("Display a line marking the edge column"),
+		setDisplayEdge(bool),
+		application()->editorSettings->displayEdge());
 
 	foldAllAct = new QAction(tr("Toggle All Code Folds"), application());
 	foldAllAct->setStatusTip(tr("Folds or unfolds all lines"));
 	connect(foldAllAct, SIGNAL(triggered()), application()->editor(), SLOT(foldAll()));
 	foldAllAct->setEnabled(application()->editorSettings->displayCodeFolding());
 
-	checkable_act(edgeAct, tr("Indicate Edge Column"),
-		tr("Display a line marking the edge column"),
-		setDisplayEdge(bool),
-		application()->editorSettings->displayEdge());
 	
 	// Settings
-	checkable_act(foldAct, tr("Code Folding"), 
+	checkableAction(settingsItems, tr("Code Folding"), 
 		tr("Enable/disable code folding"),
 		setFolding(bool),
 		application()->editorSettings->displayCodeFolding());
-	connect(foldAct, SIGNAL(triggered(bool)), foldAllAct, SLOT(setEnabled(bool)));
-	checkable_act(autoCompAct, tr("Auto completion"),
+	connect(act, SIGNAL(triggered(bool)), foldAllAct, SLOT(setEnabled(bool)));
+	checkableAction(settingsItems, tr("Auto completion"),
 		tr("Suggest completions for the current text"),
 		setAutoCompletion(bool),
 		application()->editorSettings->displayAutoComplete());
-	checkable_act(braceMatchAct, tr("Brace Matching"),
+	checkableAction(settingsItems, tr("Brace Matching"),
 		tr("Highlight matching pairs of braces"),
 		setBraceMatching(bool), 
 		application()->editorSettings->displayBraceMatch());
-	checkable_act(autoIndentAct, tr("Auto Indent"),
+	checkableAction(settingsItems, tr("Auto Indent"),
 		tr("Automatically indent"),
 		setAutoIndent(bool), 
 		application()->editorSettings->autoIndent());
@@ -197,46 +205,41 @@ QsciApp *Actions::application()
 
 void Actions::setupMenus()
 {
+	QList<QAction*>::iterator iter;
+
+	// File menu
 	fileMenu = application()->menuBar()->addMenu(tr("&File"));
-	fileMenu->addAction(newAct);
-	fileMenu->addAction(openAct);
-	fileMenu->addAction(reloadAct);
-	fileMenu->addAction(saveAct);
-	fileMenu->addAction(saveAsAct);
+	for (iter = fileItems.begin(); iter != fileItems.end(); iter++)
+		fileMenu->addAction(*iter);
 
+	// Edit menu
 	editMenu = application()->menuBar()->addMenu(tr("&Edit"));
-	editMenu->addAction(undoAct);
-	editMenu->addAction(redoAct);
+	for (iter = editItemsUR.begin(); iter != editItemsUR.end(); iter++)
+		editMenu->addAction(*iter);
 	editMenu->addSeparator();
-	editMenu->addAction(cutAct);
-	editMenu->addAction(copyAct);
-	editMenu->addAction(pasteAct);
-	editMenu->addSeparator();
-	editMenu->addAction(findAct);
-	editMenu->addAction(findNextAct);
-	editMenu->addAction(findPrevAct);
-	editMenu->addAction(gotoLineAct);
-	editMenu->addAction(gotoBraceAct);
-	editMenu->addAction(selectBraceAct);
-	editMenu->addAction(lineCommentAct);
-	editMenu->addAction(blockCommentAct);
-	editMenu->addAction(suggestCompletion);
 
+	editMenu->addAction(findAct);
+	editMenu->addAction(findPrevAct);
+	editMenu->addAction(findNextAct);
+	editMenu->addSeparator();
+
+	for (iter = editItemsMisc.begin(); iter != editItemsMisc.end(); iter++)
+		editMenu->addAction(*iter);
+
+	// View menu
 	viewMenu = application()->menuBar()->addMenu(tr("&View"));
-	viewMenu->addAction(lineNumAct);
-	viewMenu->addAction(whiteSpaceAct);
-	viewMenu->addAction(wrapTextAct);
-	viewMenu->addAction(hlCurrentAct);
-	viewMenu->addAction(edgeAct);
+	for (iter = viewItems.begin(); iter != viewItems.end(); iter++)
+		viewMenu->addAction(*iter);
+
 	viewMenu->addSeparator();
 	viewMenu->addAction(foldAllAct);
 
+	// Settings menu
 	settingsMenu = application()->menuBar()->addMenu(tr("&Settings"));
-	settingsMenu->addAction(foldAct);
-	settingsMenu->addAction(autoCompAct);
-	settingsMenu->addAction(braceMatchAct);
-	settingsMenu->addAction(autoIndentAct);
+	for (iter = settingsItems.begin(); iter != settingsItems.end(); iter++)
+		settingsMenu->addAction(*iter);
 
+	// Help menu
 	application()->menuBar()->addSeparator();
 	helpMenu = application()->menuBar()->addMenu(tr("&Help"));
 	helpMenu->addAction(aboutAct);
@@ -245,21 +248,24 @@ void Actions::setupMenus()
 
 void Actions::setupToolBars()
 {
+	QList<QAction*>::iterator iter;
+
+	// File toolbar
 	fileToolBar = application()->addToolBar(tr("File"));
-	fileToolBar->addAction(newAct);
-	fileToolBar->addAction(openAct);
-	fileToolBar->addAction(saveAct);
-	fileToolBar->addAction(saveAsAct);
-	fileToolBar->addSeparator();
+	for (iter = fileItems.begin(); iter != fileItems.end(); iter++)
+		fileToolBar->addAction(*iter);
 
+	// Edit toolbar
 	editToolBar = application()->addToolBar(tr("Edit"));
-	editToolBar->addAction(undoAct);
-	editToolBar->addAction(redoAct);
+	for (iter = editItemsUR.begin(); iter != editItemsUR.end(); iter++)
+		editToolBar->addAction(*iter);
+	
 	editToolBar->addSeparator();
-	editToolBar->addAction(cutAct);
-	editToolBar->addAction(copyAct);
-	editToolBar->addAction(pasteAct);
+	for (iter = editItemsCCP.begin(); iter != editItemsCCP.end(); iter++)
+		editToolBar->addAction(*iter);
 
+
+	// Find toolbar
 	findToolBar = application()->addToolBar(tr("&Find"));
 	findEntry = new QLineEdit();
 	findEntry->setMaximumWidth(200);
