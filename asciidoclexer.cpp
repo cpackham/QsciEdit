@@ -12,45 +12,45 @@ AsciiDocLexer::AsciiDocLexer(QObject *parent)
 	declareStyle(Default,
 		QColor(0x0, 0x0, 0x0),
 		QColor("white"),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 	declareStyle(Comment,
 		QColor(0x0, 0x80, 0x0),
 		QColor("white"),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 	declareStyle(Header,
 		QColor(0x80, 0x0, 0x0),
 		QColor(0xff, 0xf0, 0xf0),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 	setEolFill(true, Header);
 	declareStyle(ParaHeader,
 		QColor(0x80, 0x0, 0x0),
 		QColor("white"),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 	declareStyle(BoldText,
 		QColor(0x0, 0x0, 0xe0),
 		QColor(0xe0, 0xe0, 0xff),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 	declareStyle(ItalicText,
 		QColor(0x80, 0x0, 0xe0),
 		QColor("white"),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 	declareStyle(FixedText,
 		QColor(0x40, 0x0, 0xe0),
 		QColor("white"),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 	declareStyle(URL,
 		QColor(0x0, 0x0, 0x80),
 		QColor("white"),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 	declareStyle(ListingBlock,
 		QColor(0x0, 0x0, 0x40),
 		QColor(0xe0, 0xe0, 0xff),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 	setEolFill(true, ListingBlock);
 	declareStyle(SideBarBlock,
 		QColor(0xe0, 0x80, 0x0),
 		QColor("white"),
-		QFont("Monospaced, Courier", 10));
+		QFont("Liberation Mono", 10));
 }
 
 AsciiDocLexer::~AsciiDocLexer()

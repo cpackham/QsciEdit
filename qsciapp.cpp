@@ -19,7 +19,7 @@ QsciApp::QsciApp(const QString fileArg, unsigned int lineArg)
 
 	setWindowTitle(tr("[*] - %1").arg(APPLICATION_NAME));
 	textEdit = new QsciScintilla;
-	textEdit->setFont(QFont("Monospaced, Courier", 10));
+	textEdit->setFont(QFont("Liberation Mono", 10));
 	findDialog = NULL;
 	lineCommentString = "";
 	blockCommentStartString = "";
@@ -531,8 +531,7 @@ void QsciApp::setCurrentFile(const QString &fileName)
 
 	textEdit->setLexer(lexer);
 	if (textEdit->lexer()) {
-		QFont font = QFont("Monospaced, Courier", 10);
-		textEdit->lexer()->setDefaultFont(font);
+		QFont font = QFont("Liberation Mono", 10);
 		textEdit->lexer()->setFont(font);
 	}
 }
