@@ -52,6 +52,9 @@ public:
 		QString *blockCommentMiddleString,
 		QString *blockCommentEndString);
 
+	static void saveLexerSettings();
+	static void loadLexerSettings();
+
 private:
 	static QList<LexerData> lexerInfo;
 	static QList<LexerData> lexerTextInfo;

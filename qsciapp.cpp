@@ -516,6 +516,7 @@ void QsciApp::loadSettings()
 	QString file = settings.value("file", "").toString();
 	int line = settings.value("CursorLine", 0).toInt();
 	int index = settings.value("CursorIndex", 0).toInt();
+	LexerSelector::loadLexerSettings();
 	editorSettings->load();
 
 	move (pos);
@@ -538,6 +539,7 @@ void QsciApp::saveSettings()
 	settings.setValue("CursorLine", line);
 	settings.setValue("CursorIndex", index);
 	editorSettings->save();
+	LexerSelector::saveLexerSettings();
 }
 
 void QsciApp::applySettings()

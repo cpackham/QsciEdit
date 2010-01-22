@@ -16,6 +16,7 @@
 #include <qscilexertcl.h>
 #include "asciidoclexer.h"
 #include "lexersel.h"
+#include "globals.h"
 
 QList<LexerData> initFileData()
 {
@@ -200,5 +201,70 @@ QsciLexer* LexerSelector::getLexerById(int id,
 	}
 
 	return lexer;
+}
+
+void LexerSelector::saveLexerSettings()
+{
+	QSettings settings(COMPANY_NAME, APPLICATION_NAME);
+	QList<LexerData>::iterator iter;
+	int i;
+
+	settings.beginWriteArray("FileLexers");
+	for (iter = lexerInfo.begin(), i=0;
+	     iter != lexerInfo.end(); 
+	     iter++, i++) {
+		LexerData data(*iter);
+		settings.setArrayIndex(i);
+		settings.setValue("Pattern", data.pattern);
+		settings.setValue("Id", data.id);
+	}
+	settings.endArray();
+
+	settings.beginWriteArray("TextLexers");
+	for (iter = lexerTextInfo.begin(), i=0; 
+	     iter != lexerTextInfo.end(); 
+	     iter++, i++) {
+		LexerData data(*iter);
+		settings.setArrayIndex(i);
+		settings.setValue("Pattern", data.pattern);
+		settings.setValue("Id", data.id);
+	}
+	settings.endArray();
+}
+
+void LexerSelector::loadLexerSettings()
+{
+	QSettings settings(COMPANY_NAME, APPLICATION_NAME);
+	QList<LexerData> list;
+	int i, size;
+
+	size = settings.beginReadArray("FileLexers");
+	for (i = 0; i < size; i++) {
+		settings.setArrayIndex(i);
+		QString pattern = settings.value("Pattern").toString();
+		LexerID id = (LexerID)settings.value("Id").toInt();
+		LexerData data(pattern, id);
+		list.append(data);
+	}
+	settings.endArray();
+
+	if (size) {
+		lexerInfo = list;
+	}
+
+	list.clear();
+	size = settings.beginReadArray("TextLexers");
+	for (i = 0; i < size; i++) {
+		settings.setArrayIndex(i);
+		QString pattern = settings.value("Pattern").toString();
+		LexerID id = (LexerID)settings.value("Id").toInt();
+		LexerData data(pattern, id);
+		list.append(data);
+	}
+	settings.endArray();
+	
+	if (size) {
+		lexerTextInfo = list;
+	}
 }
 
