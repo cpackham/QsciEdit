@@ -12,15 +12,20 @@ class AsciiDocLexer : public QsciLexerCustom {
 public:
 	enum {
 		Default = 0,
-		Comment,
-		Header,
-		ParaHeader,
+		SideBarBlock,
 		BoldText,
 		ItalicText,
 		FixedText,
+		SuperText,
+		SubText,
 		URL,
+		Bullet,
+		Header,
+		ParaHeader,
+		Keyword,
+		Comment,
 		ListingBlock,
-		SideBarBlock,
+
 		MaxStyle
 	};
 
@@ -29,14 +34,21 @@ public:
 	const char *language() const;
 	QString description(int) const;
 	void styleText(int start, int end);
-
+	bool pushStyle(int style);
+	bool popStyle();
+	int getStyle();
+	bool hasStyle(int);
+	void resetStyle();
+	
 private:
-	int styleLine(QString, int);
+	void styleLine(QString);
 	QMap<int,QString> styleNames;
 #define declareStyle(style,color, paper, font) styleNames[style] = tr(#style); \
 		setColor(color, style); \
 		setPaper(paper, style); \
 		setFont(font, style);
+	QList<int> styleStack;
+	QList<QString> keywordList;
 
 };
 

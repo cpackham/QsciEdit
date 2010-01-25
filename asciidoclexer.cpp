@@ -8,7 +8,13 @@
 AsciiDocLexer::AsciiDocLexer(QObject *parent)
 	: QsciLexerCustom(parent)
 {
-	qDebug() << __FUNCTION__;
+	styleStack = QList<int>();
+	resetStyle ();
+	
+	keywordList = QList<QString>();
+	keywordList << "NOTE:" << "TIP:" << "IMPORTANT:"
+		<< "WARNING:" << "CAUTION:";
+	
 	declareStyle(Default,
 		QColor(0x0, 0x0, 0x0),
 		QColor("white"),
@@ -28,7 +34,7 @@ AsciiDocLexer::AsciiDocLexer(QObject *parent)
 		QFont("Liberation Mono", 10));
 	declareStyle(BoldText,
 		QColor(0x0, 0x0, 0xe0),
-		QColor(0xe0, 0xe0, 0xff),
+		QColor("white"),
 		QFont("Liberation Mono", 10));
 	declareStyle(ItalicText,
 		QColor(0x80, 0x0, 0xe0),
@@ -36,6 +42,14 @@ AsciiDocLexer::AsciiDocLexer(QObject *parent)
 		QFont("Liberation Mono", 10));
 	declareStyle(FixedText,
 		QColor(0x40, 0x0, 0xe0),
+		QColor("white"),
+		QFont("Liberation Mono", 10));
+	declareStyle(SuperText,
+		QColor(0x40, 0xe0, 0xe0),
+		QColor("white"),
+		QFont("Liberation Mono", 10));
+	declareStyle(SubText,
+		QColor(0x0, 0x80, 0x80),
 		QColor("white"),
 		QFont("Liberation Mono", 10));
 	declareStyle(URL,
@@ -49,6 +63,14 @@ AsciiDocLexer::AsciiDocLexer(QObject *parent)
 	setEolFill(true, ListingBlock);
 	declareStyle(SideBarBlock,
 		QColor(0xe0, 0x80, 0x0),
+		QColor("white"),
+		QFont("Liberation Mono", 10));
+	declareStyle(Keyword,
+		QColor(0xe0, 0x0, 0x0),
+		QColor("white"),
+		QFont("Liberation Mono", 10));
+	declareStyle(Bullet,
+		QColor(0xe0, 0x0, 0x0),
 		QColor("white"),
 		QFont("Liberation Mono", 10));
 }
@@ -75,29 +97,31 @@ QString AsciiDocLexer::description(int style) const
 void AsciiDocLexer::styleText(int start, int end)
 {
 	QString source;
-
-	qDebug() << __FUNCTION__ 
-		<< "start =" << start
-		<< " end =" << end;
-
+	QRegExp paraHead("\\.[^ .].*");
+	
 	if (!editor())
 		return;
+	
+	resetStyle ();
 
 	char *chars = new char[(end - start) + 1];
 	editor()->SendScintilla(QsciScintilla::SCI_GETTEXTRANGE, start, end, chars);
 	source = QString(chars);
 	delete [] chars;
 
-	qDebug() << "source =" << source;
+// 	qDebug() << "source =" << source;
 	
 	startStyling(start, 0x1f);
 	QStringList list = source.split("\n");
-	int defaultstyle = Default;
 
 	QStringList::iterator iter, next;
 	for (iter = list.begin(); iter != list.end(); iter = next) {
+		bool pop = false;
 		next = iter+1;
 		QString line = *iter;
+
+		int len = line.size();
+// 		qDebug() << "line =" << line;
 
 		// The next line could make the current one a header.
 		if (next != list.end()) {
@@ -105,77 +129,162 @@ void AsciiDocLexer::styleText(int start, int end)
 			if ( nextLine.startsWith("===") || 
 				nextLine.startsWith("~~") || 
 				(nextLine.startsWith("--") && nextLine != "----")) {
-				defaultstyle = Header;
+					pop = pushStyle(Header);
+					goto endloop;
 		       }
 		}
 
-		int len = line.size();
-		int style = defaultstyle;
-		qDebug() << "line =" << line;
-
 		if (line.startsWith("//")) {
-			style = Comment;
+			pushStyle(Comment);
 		} else if (line.startsWith("==") || 
 			   line.startsWith("~~") || 
 			   (line.startsWith("--") && line != "----")) {
-			style = Header;
-			defaultstyle = Default;
-		} else if (line.startsWith (".")) {
-			style = ParaHeader;
+			pop = pushStyle(Header);
+		} else if (paraHead.exactMatch(line)) {
+			pop = pushStyle(ParaHeader);
 		} else if (line == "****"){
-			style = SideBarBlock;
-			defaultstyle = defaultstyle == SideBarBlock ? Default : SideBarBlock;
+			if (hasStyle(SideBarBlock))
+				pop = true;
+			else
+				pushStyle(SideBarBlock);
 		} else if (line == "----"){
-			style = ListingBlock;
-			defaultstyle = defaultstyle == ListingBlock ? Default : ListingBlock;
+			if (hasStyle(ListingBlock))
+				pop = true;
+			else
+				pushStyle(ListingBlock);
+				
 		} else if (!line.isEmpty()){
-			defaultstyle = styleLine(line, defaultstyle);
+			styleLine(line);
 			continue;
 		}
-		qDebug() << "Styling " << len << "bytes " << description(style);
-		setStyling(len, style);
+		
+endloop:		
+// 		qDebug() << "Styling " << len << "bytes " << description(getStyle());
+		setStyling(len, getStyle());
 		// newline character was consumed in split so...
-	 	setStyling(1, style);
+	 	setStyling(1, getStyle());
+		
+		if (pop)
+			popStyle();
 	}
 }
 
-int AsciiDocLexer::styleLine(QString line, int defaultstyle)
+void AsciiDocLexer::styleLine(QString line)
 {
 	QStringList list = line.split(" ");
 	QStringList::iterator iter;
+	QRegExp startstyledtext("([*_+^~])[^ ].*");
+	QRegExp endstyledtext(".+([*_+^~])[.,);:]?");
+	QRegExp bullet("[*]+");
+	QRegExp numbered("[.]+");
 
 	for (iter = list.begin(); iter != list.end(); iter++) {
 		QString word = *iter;
 		int len = word.size();
-		int style = defaultstyle;
+		bool pop = false;
 
-		qDebug() << "word =" << word;
+// 		qDebug() << "word =" << word;
 		if (word.startsWith("http://")) { 
-			style = URL;
-		} else if (word.startsWith("_")) {
-			style = ItalicText;
-			defaultstyle = style;
-		} else if (word.startsWith("*") && word != "*") {
-			style = BoldText;
-			defaultstyle = style;
-		} else if (word.startsWith("+")) {
-			style = FixedText;
-			defaultstyle = style;
+			pop = pushStyle(URL);
+		} else if (keywordList.contains(word)) {
+			pop = pushStyle(Keyword);
+		} else if (bullet.exactMatch(word) || numbered.exactMatch(word)) {
+			pop = pushStyle(Bullet);
+		} else if (startstyledtext.exactMatch(word)) {
+			QStringList list = startstyledtext.capturedTexts();
+			QChar type = list[1][0];
+			
+			switch (type.toLatin1()) {
+			case '_':
+				pushStyle(ItalicText);
+				break;
+			case '*':
+				pushStyle(BoldText);
+				break;
+			case '+':
+				pushStyle(FixedText);
+				break;
+			case '^':
+				pushStyle(SuperText);
+				break;
+			case '~':
+				pushStyle(SubText);
+				break;
+			}
+		}
+		
+// 		qDebug() << "Styling " << len << "bytes " << description(getStyle());
+		setStyling(len, (getStyle()));
+
+		if (endstyledtext.exactMatch(word)) {
+			QStringList list = endstyledtext.capturedTexts();
+			QChar type = list[1][0];
+
+			switch (type.toLatin1()) {
+			case '_':
+				pop = hasStyle(ItalicText);
+				break;
+			case '*':
+				pop = hasStyle(BoldText);
+				break;
+			case '+':
+				pop = hasStyle(FixedText);
+				break;
+			case '^':
+				pop = hasStyle(SuperText);
+				break;
+			case '~':
+				pop = hasStyle(SubText);
+				break;
+			}
 		}
 
-		if (word.endsWith("_") || word.endsWith("_.")) {
-			defaultstyle = Default;
-		} else if (word.endsWith("*") && word != "*" ) {
-			defaultstyle = Default;
-		} else if (word.endsWith("+")) {
-			defaultstyle = Default;
-		}
+		if (pop) 
+			popStyle();
 
-		qDebug() << "Styling " << len << "bytes " << description(style);
-		setStyling(len, (style));
-		setStyling(1, (defaultstyle));
+		setStyling(1, (getStyle()));
 	}
+}
 
-	return defaultstyle;
+bool AsciiDocLexer::pushStyle(int style)
+{
+	bool pushed = false;
+	
+	if (style >= getStyle()) {
+		styleStack << style;
+		pushed = true;
+// 		qDebug() << __FUNCTION__ << description(style);
+	}
+	return pushed;
+}
+
+bool AsciiDocLexer::popStyle()
+{
+	int style;
+	bool popped = false;
+	if (styleStack.size() > 1) {
+		style = styleStack.takeLast() ;
+		popped = true;
+// 		qDebug() << __FUNCTION__ << description(style);
+	}
+	return popped;
+}
+
+int AsciiDocLexer::getStyle()
+{
+	int style;
+	style = styleStack.at(styleStack.size()-1) ;
+	return style;
+}
+
+bool AsciiDocLexer::hasStyle(int style)
+{
+	return styleStack.contains(style);
+}
+
+void AsciiDocLexer::resetStyle()
+{
+	styleStack.clear();
+	styleStack << Default;
 }
 
