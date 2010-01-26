@@ -54,6 +54,58 @@ QList<LexerData> initTextData()
 
 QList<LexerData> LexerSelector::lexerTextInfo(initTextData());
 
+QMap<QString,LexerID> initStringToId()
+{
+	QMap<QString,LexerID> map;
+	#define addMap(id) map[#id] = id
+	
+	addMap(LexerNone);
+	addMap(LexerCPP);
+	addMap(LexerJava);
+	addMap(LexerJavaScript);
+	addMap(LexerBash);
+	addMap(LexerMakefile);
+	addMap(LexerCMake);
+	addMap(LexerPython);
+	addMap(LexerDiff);
+	addMap(LexerTCL);
+	addMap(LexerPerl);
+	addMap(LexerHTML);
+	addMap(LexerCSS);
+	addMap(LexerAsciiDoc);
+	
+	#undef addMap
+	return map;
+}
+
+QMap<QString,LexerID> LexerSelector::stringToIdMap(initStringToId());
+
+QMap<LexerID,QString> initIdToString()
+{
+	QMap<LexerID,QString> map;
+	#define addMap(id) map[id] = #id
+	
+	addMap(LexerNone);
+	addMap(LexerCPP);
+	addMap(LexerJava);
+	addMap(LexerJavaScript);
+	addMap(LexerBash);
+	addMap(LexerMakefile);
+	addMap(LexerCMake);
+	addMap(LexerPython);
+	addMap(LexerDiff);
+	addMap(LexerTCL);
+	addMap(LexerPerl);
+	addMap(LexerHTML);
+	addMap(LexerCSS);
+	addMap(LexerAsciiDoc);
+	
+	#undef addMap
+	return map;
+}
+
+QMap<LexerID,QString> LexerSelector::idToStringMap(initIdToString());
+
 QsciLexer* LexerSelector::getLexerForFile(const QString &fileName,
 		QString *lineCommentString, QString *blockCommentStartString,
 		QString *blockCommentMiddleString, QString *blockCommentEndString)
@@ -72,8 +124,8 @@ QsciLexer* LexerSelector::getLexerForFile(const QString &fileName,
 			rx.setPatternSyntax(QRegExp::Wildcard);
 
 			if (rx.exactMatch(fileName)) {
-				qDebug() << __FUNCTION__  << fileName << " matches" << *iter 
-					 << " using lexer" << lexerData.id;
+				// qDebug() << __FUNCTION__  << fileName << " matches" << *iter 
+				//	 << " using lexer" << lexerData.id;
 				id = lexerData.id;
 				return getLexerById(id,lineCommentString,
 					blockCommentStartString, 
@@ -100,8 +152,8 @@ QsciLexer* LexerSelector::getLexerForText(const QString &text,
 		QStringList::iterator iter;
 		for( iter = list.begin(); iter != list.end(); iter++){
 			if (text.contains(*iter)) {
-				qDebug() << __FUNCTION__  << text << " matches" << *iter
-					 << " using lexer" << lexerData.id;
+				// qDebug() << __FUNCTION__  << text << " matches" << *iter
+				//	 << " using lexer" << lexerData.id;
 				id = lexerData.id;
 				return getLexerById(id,lineCommentString,
 					blockCommentStartString, 
@@ -218,7 +270,7 @@ void LexerSelector::saveLexerSettings()
 		LexerData data(*iter);
 		settings.setArrayIndex(i);
 		settings.setValue("Pattern", data.pattern);
-		settings.setValue("Id", data.id);
+		settings.setValue("Id", lexerIdToString(data.id));
 	}
 	settings.endArray();
 
@@ -229,7 +281,7 @@ void LexerSelector::saveLexerSettings()
 		LexerData data(*iter);
 		settings.setArrayIndex(i);
 		settings.setValue("Pattern", data.pattern);
-		settings.setValue("Id", data.id);
+		settings.setValue("Id", lexerIdToString(data.id));
 	}
 	settings.endArray();
 }
@@ -244,13 +296,15 @@ void LexerSelector::loadLexerSettings()
 	for (i = 0; i < size; i++) {
 		settings.setArrayIndex(i);
 		QString pattern = settings.value("Pattern").toString();
-		LexerID id = (LexerID)settings.value("Id").toInt();
-		LexerData data(pattern, id);
-		list.append(data);
+		LexerID id = lexerStringToId(settings.value("Id").toString());
+		if (id > LexerNone) {
+			LexerData data(pattern, id);
+			list.append(data);
+		}
 	}
 	settings.endArray();
 
-	if (size) {
+	if (size && list.size()) {
 		lexerInfo = list;
 	}
 
@@ -259,14 +313,25 @@ void LexerSelector::loadLexerSettings()
 	for (i = 0; i < size; i++) {
 		settings.setArrayIndex(i);
 		QString pattern = settings.value("Pattern").toString();
-		LexerID id = (LexerID)settings.value("Id").toInt();
-		LexerData data(pattern, id);
-		list.append(data);
+		LexerID id = (LexerID)lexerStringToId(settings.value("Id").toString());
+		if (id > LexerNone) {
+			LexerData data(pattern, id);
+			list.append(data);
+		}
 	}
 	settings.endArray();
 	
-	if (size) {
+	if (size && list.size()) {
 		lexerTextInfo = list;
 	}
 }
 
+LexerID LexerSelector::lexerStringToId(QString str)
+{
+	return stringToIdMap[str];
+}
+
+QString LexerSelector::lexerIdToString(LexerID id)
+{
+	return idToStringMap[id];
+}

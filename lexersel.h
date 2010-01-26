@@ -54,10 +54,14 @@ public:
 
 	static void saveLexerSettings();
 	static void loadLexerSettings();
+	static LexerID lexerStringToId(QString);
+	static QString lexerIdToString(LexerID);
 
 private:
 	static QList<LexerData> lexerInfo;
 	static QList<LexerData> lexerTextInfo;
+	static QMap<QString,LexerID> stringToIdMap;
+	static QMap<LexerID,QString> idToStringMap;
 };
 
 #endif
