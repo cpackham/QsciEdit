@@ -15,5 +15,9 @@ version.input = VERSION_CPP_IN
 version.CONFIG += no_link
 version.variable_out = SOURCES
 
+win32{
+        version.commands = copy ${QMAKE_FILE_NAME} ${QMAKE_FILE_OUT}
+}
+
 QMAKE_EXTRA_COMPILERS += version
 

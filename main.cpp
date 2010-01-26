@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 	unsigned int line = 1;
 
 #ifndef DEBUG
+#ifndef Q_WS_WIN
 	pid_t pid = fork();
 
 	if (pid > 0) {
@@ -18,6 +19,7 @@ int main(int argc, char *argv[])
 	} else if (pid < 0) {
 		perror ("Error forking");
 	}
+#endif
 #endif
 
 	// Let Qt have first dibs on the command line arguments
