@@ -67,15 +67,20 @@ void Actions::setupActions()
 			QtIconLoader::icon("document-save-as"));
 
 	// Edit actions
-	newActionWithIcon(editItemsUR, tr("&Undo"),
+	newActionWithIcon(editItems, tr("&Undo"),
 			tr("Undo last edit"),
 			QKeySequence::Undo,undo(),
 			QtIconLoader::icon("edit-undo"));
-	newActionWithIcon(editItemsUR, tr("&Redo"),
+	newActionWithIcon(editItems, tr("&Redo"),
 			tr("Redo last edit"),
 			QKeySequence::Redo,redo(),
 			QtIconLoader::icon("edit-redo"));
-	newActionWithIcon(editItemsCCP, tr("Cu&t"),
+			
+	act = new QAction(application());
+	act->setSeparator(true);
+	editItems << act;
+
+	newActionWithIcon(editItems, tr("Cu&t"),
 			tr("Cut the selected text"),
 			QKeySequence::Cut,cut(),
 			QtIconLoader::icon("edit-cut"));
@@ -83,7 +88,7 @@ void Actions::setupActions()
 	connect(application()->editor(), SIGNAL(copyAvailable(bool)),
 		act, SLOT(setEnabled(bool)));
 
-	newActionWithIcon(editItemsCCP, tr("&Copy"),
+	newActionWithIcon(editItems, tr("&Copy"),
 			tr("Copy the selected text to the clipboard"),
 			QKeySequence::Copy,copy(),
 			QtIconLoader::icon("edit-copy"));
@@ -91,25 +96,36 @@ void Actions::setupActions()
 	connect(application()->editor(), SIGNAL(copyAvailable(bool)),
 		act, SLOT(setEnabled(bool)));
 
-	newActionWithIcon(editItemsCCP, tr("&Paste"),
+	newActionWithIcon(editItems, tr("&Paste"),
 			tr("Paste text from the clipboard"),
 			QKeySequence::Paste,paste(),
 			QtIconLoader::icon("edit-paste"));
+
+	act = new QAction(application());
+	act->setSeparator(true);
+	editItemsMisc << act;
 
 	findAct = new QAction(QtIconLoader::icon("edit-find"), tr("&Find..."), application());
 	findAct->setStatusTip(tr("Search for text"));
 	findAct->setShortcuts(QKeySequence::Find);
 	connect(findAct, SIGNAL(triggered()), this, SLOT(find()));
+	editItemsMisc << findAct;
 
 	findPrevAct = new QAction(QtIconLoader::icon("go-previous"), tr("Find &Prev"), application());
-	findPrevAct->setStatusTip(tr("Repeat the last search"));
+	findPrevAct->setStatusTip(tr("Repeat the last search backwards"));
 	findPrevAct->setShortcuts(QKeySequence::FindPrevious);
 	connect(findPrevAct, SIGNAL(triggered()), this, SLOT(findPrev()));
+	editItemsMisc << findPrevAct;
 
 	findNextAct = new QAction(QtIconLoader::icon("go-next"),tr("Find &Next"), application());
-	findNextAct->setStatusTip(tr("Repeat the last search"));
+	findNextAct->setStatusTip(tr("Repeat the last search forwards"));
 	findNextAct->setShortcuts(QKeySequence::FindNext);
 	connect(findNextAct, SIGNAL(triggered()), this, SLOT(findNext()));
+	editItemsMisc << findNextAct;
+
+	act = new QAction(application());
+	act->setSeparator(true);
+	editItemsMisc << act;
 
 	newAction(editItemsMisc, tr("&Goto Line"), 
 		tr("Jump to a line number"), tr("Ctrl+G"), askForLine());
@@ -163,11 +179,17 @@ void Actions::setupActions()
 		setDisplayEdge(bool),
 		application()->editorSettings->displayEdge());
 
-	foldAllAct = new QAction(tr("Toggle All Code Folds"), application());
-	foldAllAct->setStatusTip(tr("Folds or unfolds all lines"));
-	connect(foldAllAct, SIGNAL(triggered()), application()->editor(), SLOT(foldAll()));
-	foldAllAct->setEnabled(application()->editorSettings->displayCodeFolding());
+	act = new QAction(application());
+	act->setSeparator(true);
+	viewItems << act;
 
+	QAction *foldAllAct = new QAction(tr("Toggle All Code Folds"),
+				application());
+	foldAllAct->setStatusTip(tr("Folds or unfolds all lines"));
+	connect(foldAllAct, SIGNAL(triggered()), 
+		application()->editor(), SLOT(foldAll()));
+	foldAllAct->setEnabled(application()->editorSettings->displayCodeFolding());
+	viewItems << foldAllAct;
 	
 	// Settings
 	checkableAction(settingsItems, tr("Code Folding"), 
@@ -188,8 +210,11 @@ void Actions::setupActions()
 		setAutoIndent(bool), 
 		application()->editorSettings->autoIndent());
 	
-	eolSetting = new QActionGroup(application());
+	act = new QAction(application());
+	act->setSeparator(true);
+	settingsItems << act;
 	
+	eolSetting = new QActionGroup(application());
 	checkableAction(settingsItems, tr("Windows"),
 		tr("Windows EOL mode (CRLF)"),
 		setEolModeWindows(bool), 
@@ -234,14 +259,8 @@ void Actions::setupMenus()
 
 	// Edit menu
 	editMenu = application()->menuBar()->addMenu(tr("&Edit"));
-	for (iter = editItemsUR.begin(); iter != editItemsUR.end(); iter++)
+	for (iter = editItems.begin(); iter != editItems.end(); iter++)
 		editMenu->addAction(*iter);
-	editMenu->addSeparator();
-
-	editMenu->addAction(findAct);
-	editMenu->addAction(findPrevAct);
-	editMenu->addAction(findNextAct);
-	editMenu->addSeparator();
 
 	for (iter = editItemsMisc.begin(); iter != editItemsMisc.end(); iter++)
 		editMenu->addAction(*iter);
@@ -250,9 +269,6 @@ void Actions::setupMenus()
 	viewMenu = application()->menuBar()->addMenu(tr("&View"));
 	for (iter = viewItems.begin(); iter != viewItems.end(); iter++)
 		viewMenu->addAction(*iter);
-
-	viewMenu->addSeparator();
-	viewMenu->addAction(foldAllAct);
 
 	// Settings menu
 	settingsMenu = application()->menuBar()->addMenu(tr("&Settings"));
@@ -277,14 +293,9 @@ void Actions::setupToolBars()
 
 	// Edit toolbar
 	editToolBar = application()->addToolBar(tr("Edit"));
-	for (iter = editItemsUR.begin(); iter != editItemsUR.end(); iter++)
+	for (iter = editItems.begin(); iter != editItems.end(); iter++)
 		editToolBar->addAction(*iter);
 	
-	editToolBar->addSeparator();
-	for (iter = editItemsCCP.begin(); iter != editItemsCCP.end(); iter++)
-		editToolBar->addAction(*iter);
-
-
 	// Find toolbar
 	findToolBar = application()->addToolBar(tr("&Find"));
 	findEntry = new QLineEdit();

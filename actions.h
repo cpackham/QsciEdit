@@ -51,15 +51,13 @@ private:
 
 	QList<QAction*> fileItems;
 
-	QList<QAction*> editItemsUR;
-	QList<QAction*> editItemsCCP;
+	QList<QAction*> editItems;
 	QAction *findAct;
 	QAction *findPrevAct;
 	QAction *findNextAct;
 	QList<QAction*> editItemsMisc;
 
 	QList<QAction*> viewItems;
-	QAction *foldAllAct;
 
 	QList<QAction*> settingsItems;
 	QActionGroup *eolSetting;
