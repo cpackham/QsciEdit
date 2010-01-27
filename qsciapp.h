@@ -63,6 +63,9 @@ private slots:
 	void lineComment();
 	void blockComment();
 	void checkModifiedOnDisk();
+	void setEolModeWindows(bool);
+	void setEolModeUnix(bool);
+	void setEolModeMac(bool);
 
 private:
 	void createActions();
@@ -80,6 +83,7 @@ private:
 	void doReload();
 	void askReload();
 	void askReloadOrKeep();
+	void setEolMode(const QString);
 
 	QsciScintilla *textEdit;
 	Actions *actions;

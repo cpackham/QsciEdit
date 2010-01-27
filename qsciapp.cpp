@@ -256,6 +256,44 @@ void QsciApp::setDisplayEdge(bool enable, int col)
 	editorSettings->setEdgeColumn(col);
 }
 
+void QsciApp::setEolModeWindows(bool enable)
+{
+	if (enable) {
+		setEolMode("Windows");
+	}	
+}
+
+void QsciApp::setEolModeUnix(bool enable)
+{
+	if (enable) {
+		setEolMode("Unix");
+	}		
+}
+
+void QsciApp::setEolModeMac(bool enable)
+{
+	if (enable) {
+		setEolMode("Mac");
+	}	
+}
+
+void QsciApp::setEolMode(const QString mode)
+{
+	QMap<QString,QsciScintilla::EolMode> map;
+	map["Windows"] = QsciScintilla::EolWindows;
+	map["CRLF"] = QsciScintilla::EolWindows;
+	map["Unix"] = QsciScintilla::EolUnix;
+	map["LF"] = QsciScintilla::EolUnix;
+	map["Mac"] = QsciScintilla::EolMac;
+	map["CR"] = QsciScintilla::EolMac;
+	
+	if (map.contains(mode)) {
+		textEdit->setEolMode(map[mode]);
+		editorSettings->setEolMode(mode);
+	}
+}
+
+
 void QsciApp::askForLine()
 {
 	int line, index;
@@ -583,6 +621,7 @@ void QsciApp::applySettings()
 	setAutoIndent(editorSettings->autoIndent());
 	setDisplayEdge(editorSettings->displayEdge(),
 			editorSettings->edgeColumn());
+	setEolMode(editorSettings->eolMode());
 }
 
 void QsciApp::askReload()

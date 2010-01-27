@@ -6,6 +6,7 @@
 
 class QsciApp;
 class QAction;
+class QActionGroup;
 class QString;
 class QMenu;
 class QToolBar;
@@ -61,6 +62,7 @@ private:
 	QAction *foldAllAct;
 
 	QList<QAction*> settingsItems;
+	QActionGroup *eolSetting;
 
 	QAction *aboutAct;
 	QAction *aboutQtAct;

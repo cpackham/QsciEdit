@@ -188,6 +188,26 @@ void Actions::setupActions()
 		setAutoIndent(bool), 
 		application()->editorSettings->autoIndent());
 	
+	eolSetting = new QActionGroup(application());
+	
+	checkableAction(settingsItems, tr("Windows"),
+		tr("Windows EOL mode (CRLF)"),
+		setEolModeWindows(bool), 
+		application()->editor()->eolMode() == QsciScintilla::EolWindows);
+	eolSetting->addAction(act);
+
+	checkableAction(settingsItems, tr("Unix"),
+		tr("Unix EOL mode (LF)"),
+		setEolModeUnix(bool), 
+		application()->editor()->eolMode() == QsciScintilla::EolUnix);
+	eolSetting->addAction(act);
+
+	checkableAction(settingsItems, tr("Mac"),
+		tr("Mac EOL mode (CR)"),
+		setEolModeMac(bool), 
+		application()->editor()->eolMode() == QsciScintilla::EolMac);
+	eolSetting->addAction(act);
+	
 	// Help actions
 	aboutAct = new QAction(QtIconLoader::icon("help-about"), "&About", application());
 	aboutAct->setStatusTip(tr("Information about %1").arg(APPLICATION_NAME)); 

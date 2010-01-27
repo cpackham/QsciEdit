@@ -34,6 +34,8 @@ public:
 	void setDisplayEdge(bool b) { edgeindication = b; };
 	int  edgeColumn()           { return edgecol; };
 	void setEdgeColumn(int i)   { edgecol = i; };
+	QString eolMode()	    { return eolmode; };
+	void setEolMode(const QString s) { eolmode = s; };
 
 private:
 	bool linenumbers;
@@ -47,6 +49,7 @@ private:
 	bool autoindent;
 	bool edgeindication;
 	int  edgecol;
+	QString eolmode;
 };
 
 

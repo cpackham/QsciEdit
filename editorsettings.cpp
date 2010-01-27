@@ -28,6 +28,7 @@ void EditorSettings::load()
 	setAutoIndent(qsettings.value("AutoIndent", false).toBool());
 	setDisplayEdge(qsettings.value("DisplayEdge", false).toBool());
 	setEdgeColumn(qsettings.value("EdgeColumn", 80).toInt());
+	setEolMode(qsettings.value("EolMode", "").toString());
 	qsettings.endGroup();
 }
 
@@ -46,5 +47,6 @@ void EditorSettings::save()
 	qsettings.setValue("AutoIndent", autoIndent());
 	qsettings.setValue("DisplayEdge", displayEdge());
 	qsettings.setValue("EdgeColumn", edgeColumn());
+	qsettings.setValue("EolMode", eolMode());
 	qsettings.endGroup();
 }
