@@ -17,7 +17,8 @@ enum LexerID {
 	LexerPerl,
 	LexerHTML,
 	LexerCSS,
-	LexerAsciiDoc
+	LexerAsciiDoc,
+	LexerTex,
 };
 
 class LexerData {

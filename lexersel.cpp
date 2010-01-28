@@ -14,6 +14,7 @@
 #include <qscilexerhtml.h>
 #include <qscilexerdiff.h>
 #include <qscilexertcl.h>
+#include <qscilexertex.h>
 #include "asciidoclexer.h"
 #include "lexersel.h"
 #include "globals.h"
@@ -34,7 +35,8 @@ QList<LexerData> initFileData()
   		<< LexerData("*.pl;*.pm", LexerPerl)
   		<< LexerData("*.html;*.xhtml", LexerHTML)
   		<< LexerData("*.css", LexerCSS)
-  		<< LexerData("*.txt", LexerAsciiDoc);
+  		<< LexerData("*.txt", LexerAsciiDoc)
+		<< LexerData("*.tex", LexerTex);
  
 	return list;
 }
@@ -47,7 +49,8 @@ QList<LexerData> initTextData()
 	list 
   		<< LexerData("/bin/sh;/bin/bash", LexerBash)
   		<< LexerData("/bin/perl;/usr/bin/perl", LexerPerl)
-  		<< LexerData("/usr/bin/python", LexerPerl);
+  		<< LexerData("/usr/bin/python", LexerPerl) 
+		<< LexerData("\\documentclass", LexerTex);
 	return list;
 	
 }
@@ -73,6 +76,7 @@ QMap<QString,LexerID> initStringToId()
 	addMap(LexerHTML);
 	addMap(LexerCSS);
 	addMap(LexerAsciiDoc);
+	addMap(LexerTex);
 	
 	#undef addMap
 	return map;
@@ -99,6 +103,7 @@ QMap<LexerID,QString> initIdToString()
 	addMap(LexerHTML);
 	addMap(LexerCSS);
 	addMap(LexerAsciiDoc);
+	addMap(LexerTex);
 	
 	#undef addMap
 	return map;
@@ -212,6 +217,9 @@ QsciLexer* LexerSelector::getLexerById(int id,
 	case LexerAsciiDoc:
 		lexer = new AsciiDocLexer;
 		break;
+	case LexerTex:
+		lexer = new QsciLexerTeX;
+		break;
 	default :
 		break;
 	}
@@ -250,6 +258,11 @@ QsciLexer* LexerSelector::getLexerById(int id,
 		*blockCommentMiddleString = "// ";
 		*blockCommentEndString = "";
 		break;
+	case LexerTex:
+		*lineCommentString = "% ";
+		*blockCommentStartString = "% ";
+		*blockCommentMiddleString = "% ";
+		*blockCommentEndString = "";
 	default :
 		break;
 	}
