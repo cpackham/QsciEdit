@@ -62,9 +62,8 @@ QString MibLexer::description(int style) const
 void MibLexer::styleText(int start, int end)
 {
 	QString source;
-	int len;
 	
-// 	qDebug() << __FUNCTION__ << start << end;
+//  	qDebug() << __FUNCTION__ << start << end;
 	
 	if (!editor())
 		return;
@@ -77,7 +76,6 @@ void MibLexer::styleText(int start, int end)
 	delete [] chars;
 	
 // 	qDebug() << "source =" << source;
-	// do keywords etc.
 	startStyling(start, 0x1f);
 	QStringList list = source.split("\n");
 	QStringList::iterator iter;
@@ -85,28 +83,6 @@ void MibLexer::styleText(int start, int end)
 		styleLine(*iter);
 	}
 
-	// do comments
-	len = end - start;
-	startStyling(start, 0x1f);
-	int count = 0;
-	int i;
-	int offset = 0;
-	for (i=0; i < len; i++)
-	{
-		if (source.mid(i, 2) == "--" && !hasStyle(Comment)) {
-			count = 0;
-			offset = i;
-			pushStyle(Comment);
-		} 
-		if (source[i] == '\n' && hasStyle(Comment)) {
-			startStyling(start+offset, 0x1f);
-			setStyling(count, getStyle());
-			count = 0;
-			popStyle();
-		}
-		count ++;
-	}
-	setStyling(count, getStyle());
 }
 
 void MibLexer::styleLine(QString line)
@@ -124,6 +100,7 @@ void MibLexer::styleLine(QString line)
 	QRegExp typeReg(typePat);
 
 	QRegExp oidReg("\\d+\\.(\\d+\\.)*\\d+");
+	QRegExp commentReg("[\\t\\s]*--.*");
 	
 	for(iter = list.begin(); iter != list.end(); iter++) {
 		QString word = *iter;
@@ -138,6 +115,8 @@ void MibLexer::styleLine(QString line)
 			pop = pushStyle(Type);
 		} else if (oidReg.exactMatch(word)) {
 			pop = pushStyle(OID);
+		} else if (commentReg.exactMatch(word) && !hasStyle(Comment)) {
+			pushStyle(Comment);
 		}
 		
 		setStyling(len, getStyle());
@@ -145,6 +124,9 @@ void MibLexer::styleLine(QString line)
 			popStyle();
 		setStyling(1, getStyle());
 	}
+	
+	if (getStyle() == Comment)
+		popStyle();
 	
 }
 
