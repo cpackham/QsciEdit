@@ -16,6 +16,7 @@
 #include <qscilexertcl.h>
 #include <qscilexertex.h>
 #include "asciidoclexer.h"
+#include "miblexer.h"
 #include "lexersel.h"
 #include "globals.h"
 
@@ -36,7 +37,8 @@ QList<LexerData> initFileData()
   		<< LexerData("*.html;*.xhtml", LexerHTML)
   		<< LexerData("*.css", LexerCSS)
   		<< LexerData("*.txt", LexerAsciiDoc)
-		<< LexerData("*.tex", LexerTex);
+		<< LexerData("*.tex", LexerTex)
+		<< LexerData("*.mib", LexerMib);
  
 	return list;
 }
@@ -77,6 +79,7 @@ QMap<QString,LexerID> initStringToId()
 	addMap(LexerCSS);
 	addMap(LexerAsciiDoc);
 	addMap(LexerTex);
+	addMap(LexerMib);
 	
 	#undef addMap
 	return map;
@@ -104,6 +107,7 @@ QMap<LexerID,QString> initIdToString()
 	addMap(LexerCSS);
 	addMap(LexerAsciiDoc);
 	addMap(LexerTex);
+	addMap(LexerMib);
 	
 	#undef addMap
 	return map;
@@ -220,6 +224,8 @@ QsciLexer* LexerSelector::getLexerById(int id,
 	case LexerTex:
 		lexer = new QsciLexerTeX;
 		break;
+	case LexerMib:
+		lexer = new MibLexer;
 	default :
 		break;
 	}
@@ -263,6 +269,11 @@ QsciLexer* LexerSelector::getLexerById(int id,
 		*blockCommentStartString = "% ";
 		*blockCommentMiddleString = "% ";
 		*blockCommentEndString = "";
+	case LexerMib:
+		*lineCommentString = "-- ";
+		*blockCommentStartString = "-- ";
+		*blockCommentMiddleString = "-- ";
+		*blockCommentEndString = "";		
 	default :
 		break;
 	}
