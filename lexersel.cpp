@@ -283,7 +283,7 @@ QsciLexer* LexerSelector::getLexerById(int id,
 
 void LexerSelector::saveLexerSettings()
 {
-	QSettings settings(COMPANY_NAME, APPLICATION_NAME);
+	QSettings settings(COMPANY_NAME, APPLICATION_NAME+"-Lexers");
 	QList<LexerData>::iterator iter;
 	int i;
 
@@ -312,7 +312,7 @@ void LexerSelector::saveLexerSettings()
 
 void LexerSelector::loadLexerSettings()
 {
-	QSettings settings(COMPANY_NAME, APPLICATION_NAME);
+	QSettings settings(COMPANY_NAME, APPLICATION_NAME+"-Lexers");
 	QList<LexerData> list;
 	int i, size;
 
