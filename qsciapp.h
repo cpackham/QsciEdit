@@ -66,6 +66,7 @@ private slots:
 	void setEolModeWindows(bool);
 	void setEolModeUnix(bool);
 	void setEolModeMac(bool);
+	void positionChanged(int,int);
 
 private:
 	void createActions();
@@ -85,6 +86,7 @@ private:
 	void askReloadOrKeep();
 	void setEolMode(const QString);
 	void setIndentationsUseTabs(bool, int);
+	void markLine(int);
 
 	QsciScintilla *textEdit;
 	Actions *actions;

@@ -60,8 +60,12 @@ QsciApp::QsciApp(const QString fileArg, unsigned int lineArg)
 	connect(textEdit, SIGNAL(modificationChanged(bool)),
 		this, SLOT(documentModified(bool)));
 
+	connect(textEdit, SIGNAL(cursorPositionChanged(int,int)),
+		this, SLOT(positionChanged(int,int)));
+
 	connect(this, SIGNAL(applicationFocusIn()),
 		this, SLOT(checkModifiedOnDisk()));
+
 
 	// applicationFocusIn is emitted by the event filter in this class. So
 	// make sure to install the event filter.
@@ -304,6 +308,11 @@ void QsciApp::setIndentationsUseTabs(bool enable, int width)
 	}
 	editorSettings->setIndentUseTabs(enable);
 	editorSettings->setIndentWidth(width);
+}
+
+void QsciApp::positionChanged(int line, int col)
+{
+ 	markLine(line);
 }
 
 void QsciApp::askForLine()
@@ -688,4 +697,16 @@ void QsciApp::checkModifiedOnDisk()
 			askReload();
 		}
 	}
+}
+
+void QsciApp::markLine(int line)
+{
+	static int mnr = -1;
+	if (mnr < 0) {
+		mnr = textEdit->markerDefine(QsciScintilla::RightTriangle, -1);
+	} else {
+		textEdit->markerDeleteAll(mnr);
+	}
+
+	textEdit->markerAdd(line, mnr);
 }
