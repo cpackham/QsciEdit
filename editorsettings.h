@@ -36,6 +36,10 @@ public:
 	void setEdgeColumn(int i)   { edgecol = i; };
 	QString eolMode()	    { return eolmode; };
 	void setEolMode(const QString s) { eolmode = s; };
+	bool indentUseTabs()	    { return indenttabs; };
+	void setIndentUseTabs(bool b) { indenttabs = b; };
+	int  indentWidth()	    { return indentwidth; };
+	void setIndentWidth(int i)  { indentwidth = i; };
 
 private:
 	bool linenumbers;
@@ -50,6 +54,8 @@ private:
 	bool edgeindication;
 	int  edgecol;
 	QString eolmode;
+	bool indenttabs;
+	int  indentwidth;
 };
 
 

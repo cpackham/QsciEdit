@@ -84,6 +84,7 @@ private:
 	void askReload();
 	void askReloadOrKeep();
 	void setEolMode(const QString);
+	void setIndentationsUseTabs(bool, int);
 
 	QsciScintilla *textEdit;
 	Actions *actions;

@@ -293,6 +293,18 @@ void QsciApp::setEolMode(const QString mode)
 	}
 }
 
+void QsciApp::setIndentationsUseTabs(bool enable, int width)
+{
+	if (enable) {
+		textEdit->setIndentationsUseTabs(enable);
+		textEdit->setIndentationWidth(textEdit->tabWidth());
+	} else {
+		textEdit->setIndentationsUseTabs(enable);
+		textEdit->setIndentationWidth(width);
+	}
+	editorSettings->setIndentUseTabs(enable);
+	editorSettings->setIndentWidth(width);
+}
 
 void QsciApp::askForLine()
 {
@@ -622,6 +634,8 @@ void QsciApp::applySettings()
 	setDisplayEdge(editorSettings->displayEdge(),
 			editorSettings->edgeColumn());
 	setEolMode(editorSettings->eolMode());
+	setIndentationsUseTabs(editorSettings->indentUseTabs(),
+			editorSettings->indentWidth());
 }
 
 void QsciApp::askReload()
