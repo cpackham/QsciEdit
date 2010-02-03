@@ -5,6 +5,7 @@
 #include "qticonloader.h"
 #include "qsciapp.h"
 #include "editorsettings.h"
+#include "qeaction.h"
 
 Actions::Actions(QsciApp* parent) : QObject(parent)
 {
@@ -20,217 +21,291 @@ Actions::~Actions()
 
 void Actions::setupActions()
 {
-	QAction *act;
-#define newActionWithIcon(list, shortstr, longstr, keyseq, slot, icon) \
-	act = new QAction(icon, shortstr, application()); \
-	act->setShortcuts(keyseq); \
-	act->setStatusTip(longstr); \
-	connect(act, SIGNAL(triggered()), application(), SLOT(slot));\
-	list << act
-
-#define newAction(list, shortstr, longstr, key, slot) \
-	act = new QAction(shortstr, application()); \
-	act->setShortcut(key); \
-	act->setStatusTip(longstr); \
-	connect(act, SIGNAL(triggered()), application(), SLOT(slot));\
-	list << act
-
-#define checkableAction(list, shortstr, longstr, slot, enable) \
-	act = new QAction(shortstr, application()); \
-	act->setStatusTip(longstr); \
-	act->setCheckable(true); \
-	act->setChecked(enable); \
-	connect(act, SIGNAL(triggered(bool)), application(), SLOT(slot)); \
-	list << act
-
+	QEAction *act;
 
 	// File actions
-	newActionWithIcon(fileItems,tr("&New"),
-			tr("Create a new file"), 
-			QKeySequence::New,newFile(),
-			QtIconLoader::icon("document-new"));
-	newActionWithIcon(fileItems, tr("&Open"),
+	act = QEAction::newAction(QtIconLoader::icon("document-new"),
+			tr("&New"),
+			application(),
+			tr("Create a new file"),
+			QKeySequence::New);
+	connect(act, SIGNAL(triggered()), application(), SLOT(newFile()));
+	fileItems << act;
+
+	act = QEAction::newAction(QtIconLoader::icon("document-open"),
+			tr("&Open"),
+			application(),
 			tr("Open an existing file"),
-			QKeySequence::Open,open(),
-			QtIconLoader::icon("document-open"));
-	newActionWithIcon(fileItems, tr("&Reload"),
-			tr("Reload the current file"),
-			QKeySequence::Refresh,reload(),
-			QtIconLoader::icon("view-refresh"));
-	newActionWithIcon(fileItems, tr("&Save"),
+			QKeySequence::Open);
+	connect(act, SIGNAL(triggered()), application(), SLOT(open()));
+	fileItems << act;
+
+	act = QEAction::newAction(QtIconLoader::icon("view-refresh"),
+			tr("&Reload"), 
+			application(), 
+			tr("Reload the current file"), 
+			QKeySequence::Refresh,
+			false, false, true, false);
+	connect(act, SIGNAL(triggered()), application(), SLOT(reload()));
+	fileItems << act;
+
+	act = QEAction::newAction(QtIconLoader::icon("document-save"),
+			tr("&Save"),
+			application(),
 			tr("Save the current file"),
-			QKeySequence::Save,save(),
-			QtIconLoader::icon("document-save"));
-	newActionWithIcon(fileItems, tr("Save &As"),
+			QKeySequence::Save);
+	connect(act, SIGNAL(triggered()), application(), SLOT(save()));
+	fileItems << act;
+
+	act = QEAction::newAction(QtIconLoader::icon("document-save-as"),
+			tr("Save &As"),
+			application(),
 			tr("Save the current file with a new name"),
-			QKeySequence::SaveAs,saveAs(),
-			QtIconLoader::icon("document-save-as"));
+			QKeySequence::SaveAs);
+	connect(act, SIGNAL(triggered()), application(), SLOT(saveAs()));
+	fileItems << act;
 
 	// Edit actions
-	newActionWithIcon(editItems, tr("&Undo"),
+	act = QEAction::newAction(QtIconLoader::icon("edit-undo"),
+			tr("&Undo"),
+			application(),
 			tr("Undo last edit"),
-			QKeySequence::Undo,undo(),
-			QtIconLoader::icon("edit-undo"));
-	newActionWithIcon(editItems, tr("&Redo"),
+			QKeySequence::Undo);
+	connect(act, SIGNAL(triggered()), application(), SLOT(undo()));
+	editItems << act;
+
+	act = QEAction::newAction(QtIconLoader::icon("edit-redo"),
+			tr("&Redo"),
+			application(),
 			tr("Redo last edit"),
-			QKeySequence::Redo,redo(),
-			QtIconLoader::icon("edit-redo"));
+			QKeySequence::Redo);
+	connect(act, SIGNAL(triggered()), application(), SLOT(redo()));
+	editItems << act;
 			
-	act = new QAction(application());
+	act = new QEAction(application());
 	act->setSeparator(true);
 	editItems << act;
 
-	newActionWithIcon(editItems, tr("Cu&t"),
+	act = QEAction::newAction(QtIconLoader::icon("edit-cut"),
+			tr("Cu&t"),
+			application(),
 			tr("Cut the selected text"),
-			QKeySequence::Cut,cut(),
-			QtIconLoader::icon("edit-cut"));
+			QKeySequence::Cut);
+	connect(act, SIGNAL(triggered()), application(), SLOT(cut()));
+	editItems << act;
 	act->setEnabled(false);
 	connect(application()->editor(), SIGNAL(copyAvailable(bool)),
 		act, SLOT(setEnabled(bool)));
 
-	newActionWithIcon(editItems, tr("&Copy"),
+	act = QEAction::newAction(QtIconLoader::icon("edit-copy"),
+			tr("&Copy"),
+			application(),
 			tr("Copy the selected text to the clipboard"),
-			QKeySequence::Copy,copy(),
-			QtIconLoader::icon("edit-copy"));
+			QKeySequence::Copy);
+	connect(act, SIGNAL(triggered()), application(), SLOT(copy()));
+	editItems << act;
 	act->setEnabled(false);
 	connect(application()->editor(), SIGNAL(copyAvailable(bool)),
 		act, SLOT(setEnabled(bool)));
 
-	newActionWithIcon(editItems, tr("&Paste"),
+	act = QEAction::newAction(QtIconLoader::icon("edit-paste"),
+			tr("&Paste"),
+			application(),
 			tr("Paste text from the clipboard"),
-			QKeySequence::Paste,paste(),
-			QtIconLoader::icon("edit-paste"));
+			QKeySequence::Paste);
+	connect(act, SIGNAL(triggered()), application(), SLOT(paste()));
+	editItems << act;
 
-	act = new QAction(application());
+	act = new QEAction(application());
 	act->setSeparator(true);
 	editItemsMisc << act;
 
-	findAct = new QAction(QtIconLoader::icon("edit-find"), tr("&Find..."), application());
-	findAct->setStatusTip(tr("Search for text"));
-	findAct->setShortcuts(QKeySequence::Find);
+	findAct = QEAction::newAction(QtIconLoader::icon("edit-find"), 
+			tr("&Find..."), 
+			application(),
+			tr("Search for text"),
+			QKeySequence::Find);
 	connect(findAct, SIGNAL(triggered()), this, SLOT(find()));
 	editItemsMisc << findAct;
 
-	findPrevAct = new QAction(QtIconLoader::icon("go-previous"), tr("Find &Prev"), application());
-	findPrevAct->setStatusTip(tr("Repeat the last search backwards"));
-	findPrevAct->setShortcuts(QKeySequence::FindPrevious);
+	findPrevAct = QEAction::newAction(QtIconLoader::icon("go-previous"), 
+			tr("Find &Prev"),
+			application(),
+			tr("Repeat the last search backwards"),
+			QKeySequence::FindPrevious);
 	connect(findPrevAct, SIGNAL(triggered()), this, SLOT(findPrev()));
 	editItemsMisc << findPrevAct;
 
-	findNextAct = new QAction(QtIconLoader::icon("go-next"),tr("Find &Next"), application());
-	findNextAct->setStatusTip(tr("Repeat the last search forwards"));
-	findNextAct->setShortcuts(QKeySequence::FindNext);
+	findNextAct = QEAction::newAction(QtIconLoader::icon("go-next"),
+			tr("Find &Next"),
+			application(),
+			tr("Repeat the last search forwards"),
+			QKeySequence::FindNext);
 	connect(findNextAct, SIGNAL(triggered()), this, SLOT(findNext()));
 	editItemsMisc << findNextAct;
 
-	act = new QAction(application());
+	act = new QEAction(application());
 	act->setSeparator(true);
 	editItemsMisc << act;
 
-	newAction(editItemsMisc, tr("&Goto Line"), 
-		tr("Jump to a line number"), tr("Ctrl+G"), askForLine());
+	act = QEAction::newAction(tr("&Goto Line"), 
+			application(),
+			tr("Jump to a line number"),
+			tr("Ctrl+G"));
+	connect(act, SIGNAL(triggered()), application(), SLOT(askForLine()));
 
-	act = new QAction(tr("Goto matching brace"), application());
-	act->setStatusTip(tr("Jump to the matching brace"));
-	act->setShortcut(tr("Ctrl+E"));
+	act = QEAction::newAction(tr("Goto matching brace"), 
+			application(),
+			tr("Jump to the matching brace"),
+			tr("Ctrl+E"));
 	connect(act, SIGNAL(triggered()), application()->editor(), SLOT(moveToMatchingBrace()));
 	editItemsMisc << act;
 
-	act = new QAction(tr("Select matching brace"), application());
-	act->setStatusTip(tr("Select to matching brace"));
-	act->setShortcut(tr("Ctrl+Shift+E"));
+	act = QEAction::newAction(tr("Select matching brace"), 
+			application(),
+			tr("Select to matching brace"),
+			tr("Ctrl+Shift+E"));
 	connect(act, SIGNAL(triggered()), application()->editor(), SLOT(selectToMatchingBrace()));
 	editItemsMisc << act;
 
-	newAction(editItemsMisc, tr("Line Comment"), 
-		tr("Comment out lines"), tr("Ctrl+D"), lineComment());
+	act = QEAction::newAction(tr("Line Comment"),
+			application(),
+			tr("Comment out lines"), 
+			tr("Ctrl+D"));
+	connect(act, SIGNAL(triggered()), application(), SLOT(lineComment()));
+	editItemsMisc << act;
 
-	newAction(editItemsMisc, tr("Block Comment"),
-		tr("Comment out the selected block of text"), 
-		tr("Ctrl+Shift+D"), blockComment());
+	act = QEAction::newAction(tr("Block Comment"),
+			application(),
+			tr("Comment out the selected block of text"), 
+			tr("Ctrl+Shift+D"));
+	connect(act, SIGNAL(triggered()), application(), SLOT(blockComment()));
+	editItemsMisc << act;
 
-	act = new QAction(tr("Suggest Completion"), application());
-	act->setStatusTip(tr("Suggest a completion based on the current text"));
-	act->setShortcut(tr("Ctrl+Space"));
+	act = QEAction::newAction(tr("Suggest Completion"),
+			application(),
+			tr("Suggest a completion based on the current text"),
+			tr("Ctrl+Space"));
 	connect(act, SIGNAL(triggered()), application()->editor(), SLOT(autoCompleteFromAll()));
 	editItemsMisc << act;
 
 	// View
-	checkableAction(viewItems, tr("Line Numbers"),
-		tr("Display line numbers in the margin"),
-		setLineNumbers(bool),
-		application()->editorSettings->displayLineNumbers());
-	checkableAction(viewItems, tr("White space"),
-		tr("Make white space visible"),
-		setWhiteSpaceVis(bool),
-		application()->editorSettings->displayWhitespace());
-	checkableAction(viewItems, tr("Wrap Text"),
-		tr("Wrap text"),
-		setWrapText(bool),
-		application()->editorSettings->displayWrapText());
+	act = QEAction::newAction(tr("Line Numbers"),
+			application(),
+			tr("Display line numbers in the margin"),
+			0, true,
+			application()->editorSettings->displayLineNumbers());
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setLineNumbers(bool)));
+	viewItems << act;
+		
+	act = QEAction::newAction(tr("White space"),
+			application(),
+			tr("Make white space visible"),
+			0, true,
+			application()->editorSettings->displayWhitespace());
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setWhiteSpaceVis(bool)));
+	viewItems << act;
 
-	checkableAction(viewItems, tr("Highlight Current Line"),
-		tr("Highlight Current Line"),
-		setHighlightCurrentLine(bool),
-		application()->editorSettings->highlightCurrentLine());
+	act = QEAction::newAction(tr("Wrap Text"),
+			application(),
+			tr("Wrap text"),
+			0, true,
+			application()->editorSettings->displayWrapText());
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setWrapText(bool)));
+	viewItems << act;
 
-	checkableAction(viewItems, tr("Indicate Edge Column"),
-		tr("Display a line marking the edge column"),
-		setDisplayEdge(bool),
-		application()->editorSettings->displayEdge());
+	act = QEAction::newAction(tr("Highlight Current Line"),
+			application(),
+			tr("Highlight Current Line"),
+			0, true,
+			application()->editorSettings->highlightCurrentLine());
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setHighlightCurrentLine(bool)));
+	viewItems << act;
 
-	act = new QAction(application());
+	act = QEAction::newAction(tr("Indicate Edge Column"),
+			application(),
+			tr("Display a line marking the edge column"),
+			0, true,
+			application()->editorSettings->displayEdge());
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setDisplayEdge(bool)));
+	viewItems << act;
+
+	act = new QEAction(application());
 	act->setSeparator(true);
 	viewItems << act;
 
-	QAction *foldAllAct = new QAction(tr("Toggle All Code Folds"),
-				application());
-	foldAllAct->setStatusTip(tr("Folds or unfolds all lines"));
+	QEAction *foldAllAct = QEAction::newAction(tr("Toggle All Code Folds"),
+				application(),
+				tr("Folds or unfolds all lines"));
 	connect(foldAllAct, SIGNAL(triggered()), 
 		application()->editor(), SLOT(foldAll()));
 	foldAllAct->setEnabled(application()->editorSettings->displayCodeFolding());
 	viewItems << foldAllAct;
 	
 	// Settings
-	checkableAction(settingsItems, tr("Code Folding"), 
-		tr("Enable/disable code folding"),
-		setFolding(bool),
-		application()->editorSettings->displayCodeFolding());
+	act = QEAction::newAction(tr("Code Folding"),
+			application(),
+			tr("Enable/disable code folding"),
+			0, true,
+			application()->editorSettings->displayCodeFolding());
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setFolding(bool)));
+	settingsItems << act;
 	connect(act, SIGNAL(triggered(bool)), foldAllAct, SLOT(setEnabled(bool)));
-	checkableAction(settingsItems, tr("Auto completion"),
-		tr("Suggest completions for the current text"),
-		setAutoCompletion(bool),
-		application()->editorSettings->displayAutoComplete());
-	checkableAction(settingsItems, tr("Brace Matching"),
-		tr("Highlight matching pairs of braces"),
-		setBraceMatching(bool), 
-		application()->editorSettings->displayBraceMatch());
-	checkableAction(settingsItems, tr("Auto Indent"),
-		tr("Automatically indent"),
-		setAutoIndent(bool), 
-		application()->editorSettings->autoIndent());
+
+	act = QEAction::newAction(tr("Auto completion"),
+			application(),
+			tr("Suggest completions for the current text"),
+			0, true,
+			application()->editorSettings->displayAutoComplete());
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setAutoCompletion(bool)));
+	settingsItems << act;
+
+	act = QEAction::newAction(tr("Brace Matching"),
+			application(),
+			tr("Highlight matching pairs of braces"),
+			0, true,
+			application()->editorSettings->displayBraceMatch());
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setBraceMatching(bool)));
+	settingsItems << act;
+
+	act = QEAction::newAction(tr("Auto Indent"),
+			application(),
+			tr("Automatically indent"),
+			0, true,
+			application()->editorSettings->autoIndent());
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setAutoIndent(bool)));
+	settingsItems << act;
 	
-	act = new QAction(application());
+	act = new QEAction(application());
 	act->setSeparator(true);
 	settingsItems << act;
 	
 	eolSetting = new QActionGroup(application());
-	checkableAction(settingsItems, tr("Windows"),
-		tr("Windows EOL mode (CRLF)"),
-		setEolModeWindows(bool), 
-		application()->editor()->eolMode() == QsciScintilla::EolWindows);
+	act = QEAction::newAction(tr("Windows"),
+			application(),
+			tr("Windows EOL mode (CRLF)"),
+			0, true,
+			application()->editor()->eolMode() == QsciScintilla::EolWindows);
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setEolModeWindows(bool)));
+	settingsItems << act;
 	eolSetting->addAction(act);
 
-	checkableAction(settingsItems, tr("Unix"),
-		tr("Unix EOL mode (LF)"),
-		setEolModeUnix(bool), 
-		application()->editor()->eolMode() == QsciScintilla::EolUnix);
+	act = QEAction::newAction(tr("Unix"),
+			application(),
+			tr("Unix EOL mode (LF)"),
+			0, true,
+			application()->editor()->eolMode() == QsciScintilla::EolUnix);
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setEolModeUnix(bool)));
+	settingsItems << act;
 	eolSetting->addAction(act);
 
-	checkableAction(settingsItems, tr("Mac"),
-		tr("Mac EOL mode (CR)"),
-		setEolModeMac(bool), 
-		application()->editor()->eolMode() == QsciScintilla::EolMac);
+	act = QEAction::newAction(("Mac"),
+			application(),
+			tr("Mac EOL mode (CR)"),
+			0, true,
+			application()->editor()->eolMode() == QsciScintilla::EolMac);
+	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setEolModeMac(bool)));
+	settingsItems << act;
 	eolSetting->addAction(act);
 	
 	// Help actions
@@ -250,30 +325,35 @@ QsciApp *Actions::application()
 
 void Actions::setupMenus()
 {
-	QList<QAction*>::iterator iter;
+	QList<QEAction*>::iterator iter;
 
 	// File menu
 	fileMenu = application()->menuBar()->addMenu(tr("&File"));
 	for (iter = fileItems.begin(); iter != fileItems.end(); iter++)
-		fileMenu->addAction(*iter);
+		if ((*iter)->showInMenu)
+			fileMenu->addAction(*iter);
 
 	// Edit menu
 	editMenu = application()->menuBar()->addMenu(tr("&Edit"));
 	for (iter = editItems.begin(); iter != editItems.end(); iter++)
-		editMenu->addAction(*iter);
+		if ((*iter)->showInMenu)
+			editMenu->addAction(*iter);
 
 	for (iter = editItemsMisc.begin(); iter != editItemsMisc.end(); iter++)
-		editMenu->addAction(*iter);
+		if ((*iter)->showInMenu)
+			editMenu->addAction(*iter);
 
 	// View menu
 	viewMenu = application()->menuBar()->addMenu(tr("&View"));
 	for (iter = viewItems.begin(); iter != viewItems.end(); iter++)
-		viewMenu->addAction(*iter);
+		if ((*iter)->showInMenu)
+			viewMenu->addAction(*iter);
 
 	// Settings menu
 	settingsMenu = application()->menuBar()->addMenu(tr("&Settings"));
 	for (iter = settingsItems.begin(); iter != settingsItems.end(); iter++)
-		settingsMenu->addAction(*iter);
+		if ((*iter)->showInMenu)
+			settingsMenu->addAction(*iter);
 
 	// Help menu
 	application()->menuBar()->addSeparator();
@@ -284,17 +364,19 @@ void Actions::setupMenus()
 
 void Actions::setupToolBars()
 {
-	QList<QAction*>::iterator iter;
+	QList<QEAction*>::iterator iter;
 
 	// File toolbar
 	fileToolBar = application()->addToolBar(tr("File"));
-	for (iter = fileItems.begin(); iter != fileItems.end(); iter++)
-		fileToolBar->addAction(*iter);
+	for (iter= fileItems.begin(); iter != fileItems.end(); iter++)
+		if ((*iter)->showInToolbar)
+			fileToolBar->addAction(*iter);
 
 	// Edit toolbar
 	editToolBar = application()->addToolBar(tr("Edit"));
 	for (iter = editItems.begin(); iter != editItems.end(); iter++)
-		editToolBar->addAction(*iter);
+		if ((*iter)->showInToolbar)
+			editToolBar->addAction(*iter);
 	
 	// Find toolbar
 	findToolBar = application()->addToolBar(tr("&Find"));

@@ -11,6 +11,7 @@ class QString;
 class QMenu;
 class QToolBar;
 class QLineEdit;
+class QEAction;
 
 class Actions : public QObject
 {
@@ -49,17 +50,17 @@ private:
 	QToolBar *findToolBar;
 	QLineEdit *findEntry;
 
-	QList<QAction*> fileItems;
+	QList<QEAction*> fileItems;
 
-	QList<QAction*> editItems;
-	QAction *findAct;
-	QAction *findPrevAct;
-	QAction *findNextAct;
-	QList<QAction*> editItemsMisc;
+	QList<QEAction*> editItems;
+	QEAction *findAct;
+	QEAction *findPrevAct;
+	QEAction *findNextAct;
+	QList<QEAction*> editItemsMisc;
 
-	QList<QAction*> viewItems;
+	QList<QEAction*> viewItems;
 
-	QList<QAction*> settingsItems;
+	QList<QEAction*> settingsItems;
 	QActionGroup *eolSetting;
 
 	QAction *aboutAct;
