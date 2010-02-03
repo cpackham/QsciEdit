@@ -18,6 +18,7 @@ SOURCES = qsciapp.cpp \
 	editorsettings.cpp \
 	asciidoclexer.cpp \
 	miblexer.cpp \
+	qeaction.cpp \
 	main.cpp
 HEADERS = qsciapp.h \
 	qticonloader.h \
@@ -28,7 +29,8 @@ HEADERS = qsciapp.h \
 	editorsettings.h \
 	version.h \
 	asciidoclexer.h \
-	miblexer.h
+	miblexer.h \
+	qeaction.h
 
 RESOURCES = qsciapp.qrc
 
