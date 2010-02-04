@@ -44,8 +44,8 @@ void Actions::setupActions()
 			tr("&Reload"), 
 			application(), 
 			tr("Reload the current file"), 
-			QKeySequence::Refresh,
-			false, false, true, false);
+			QKeySequence::Refresh);
+	act->showInToolbar = false;
 	connect(act, SIGNAL(triggered()), application(), SLOT(reload()));
 	fileItems << act;
 
@@ -63,6 +63,18 @@ void Actions::setupActions()
 			tr("Save the current file with a new name"),
 			QKeySequence::SaveAs);
 	connect(act, SIGNAL(triggered()), application(), SLOT(saveAs()));
+	fileItems << act;
+
+	act = new QEAction(application());
+	act->setSeparator(true);
+	fileItems << act;
+
+	act = QEAction::newAction(QtIconLoader::icon("application-exit"),
+			tr("&Quit"),
+			application(),
+			tr("Exit %1").arg(APPLICATION_NAME));
+	act->showInToolbar = false;
+	connect(act, SIGNAL(triggered()), application(), SLOT(close()));
 	fileItems << act;
 
 	// Edit actions
