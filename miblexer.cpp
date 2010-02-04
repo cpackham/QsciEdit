@@ -198,6 +198,7 @@ void MibLexer::initKeywords()
 		<< "LAST-UPDATED"
 		<< "MAX-ACCESS"
 		<< "OBJECT"
+		<< "OBJECTS"
 		<< "ORGANIZATION"
 		<< "REVISION"
 		<< "SEQUENCE" 
@@ -225,6 +226,7 @@ void MibLexer::initTypes()
 		<< "InterfaceIndex"
 		<< "INTEGER"
 		<< "MODULE-IDENTITY"
+		<< "NOTIFICATION-TYPE"
 		<< "OBJECT-IDENTITY"
 		<< "OBJECT-TYPE"
 		<< "RowStatus";
