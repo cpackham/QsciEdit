@@ -91,22 +91,22 @@ void MibLexer::styleText(int start, int end)
 
 void MibLexer::styleLine(QString line)
 {
-	QStringList list = line.split(" ");
+	QStringList list = line.split(QRegExp("[\\s]"));
 	QStringList::iterator iter;
 	
-	QString kwPat = "[\\t\\s]*(" + keywords.join("|") + ")[,\\t]*";
+	QString kwPat = "(" + keywords.join("|") + ")[,]*";
 	QRegExp kwReg(kwPat);
 
-	QString accessPat = "[\\t\\s]*(" + accesses.join("|") + ")[,\\t]*";
+	QString accessPat = "(" + accesses.join("|") + ")[,]*";
 	QRegExp accessReg(accessPat);
 
-	QString typePat = "[\\t\\s]*(" + types.join("|") + ")[,\\t]*";
+	QString typePat = "(" + types.join("|") + ")[,]*";
 	QRegExp typeReg(typePat);
 
 	QRegExp oidReg("\\d+\\.(\\d+\\.)*\\d+");
-	QRegExp commentReg("[\\t\\s]*--.*");
-	QRegExp stringReg("[\\t\\s]*\"[^\"]*\"[\\t\\s]*");
-	QRegExp stringStart("[\\t\\s]*\"[^\"]*");
+	QRegExp commentReg("--.*");
+	QRegExp stringReg("\"[^\"]*\"");
+	QRegExp stringStart("\"[^\"]*");
 	QRegExp stringEnd("[^\"]*\"");
 	
 	for(iter = list.begin(); iter != list.end(); iter++) {
