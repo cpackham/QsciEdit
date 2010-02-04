@@ -12,6 +12,7 @@ class MibLexer : public QsciLexerCustom {
 public:
 	enum {
 		Default = 0,
+		String,
 		Keyword,
 		Type,
 		Access,

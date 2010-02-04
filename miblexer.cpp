@@ -18,12 +18,16 @@ MibLexer::MibLexer(QObject *parent)
 		QColor(0x0, 0x0, 0x0),
 		QColor("white"),
 		QFont("Liberation Mono", 10));
+	declareStyle(String,
+		QColor(0x80, 0x0, 0x80),
+		QColor("white"),
+		QFont("Liberation Mono", 10));
 	declareStyle(Keyword,
 		QColor(0x0, 0x0, 0xff),
 		QColor("white"),
 		QFont("Liberation Mono", 10));
 	declareStyle(Type,
-		QColor(0x80, 0x0, 0x80),
+		QColor(0xe0, 0x0, 0x0),
 		QColor("white"),
 		QFont("Liberation Mono", 10));
 	declareStyle(Access,
@@ -101,6 +105,9 @@ void MibLexer::styleLine(QString line)
 
 	QRegExp oidReg("\\d+\\.(\\d+\\.)*\\d+");
 	QRegExp commentReg("[\\t\\s]*--.*");
+	QRegExp stringReg("[\\t\\s]*\"[^\"]*\"[\\t\\s]*");
+	QRegExp stringStart("[\\t\\s]*\"[^\"]*");
+	QRegExp stringEnd("[^\"]*\"");
 	
 	for(iter = list.begin(); iter != list.end(); iter++) {
 		QString word = *iter;
@@ -117,6 +124,12 @@ void MibLexer::styleLine(QString line)
 			pop = pushStyle(OID);
 		} else if (commentReg.exactMatch(word) && !hasStyle(Comment)) {
 			pushStyle(Comment);
+		} else if (stringReg.exactMatch(word)) {
+			pop = pushStyle(String);
+		} else if (stringStart.exactMatch(word) && !hasStyle(String)) {
+			pushStyle(String);
+		} else if (stringEnd.exactMatch(word) && getStyle() == String) {
+			pop = true;
 		}
 		
 		setStyling(len, getStyle());
