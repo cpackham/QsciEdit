@@ -269,11 +269,13 @@ QsciLexer* LexerSelector::getLexerById(int id,
 		*blockCommentStartString = "% ";
 		*blockCommentMiddleString = "% ";
 		*blockCommentEndString = "";
+		break;
 	case LexerMib:
 		*lineCommentString = "-- ";
 		*blockCommentStartString = "-- ";
 		*blockCommentMiddleString = "-- ";
 		*blockCommentEndString = "";		
+		break;
 	default :
 		break;
 	}
