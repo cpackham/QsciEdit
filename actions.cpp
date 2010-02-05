@@ -211,13 +211,52 @@ void Actions::setupActions()
 	editItemsMisc << act;
 
 	// View
+	act = QEAction::newAction(QtIconLoader::icon("zoom-original"),
+			tr("Reset Zoom"),
+			application(),
+			tr("Reset Zoom"),
+			tr("Ctrl+1"));
+
+	QSignalMapper *signalMapper = new QSignalMapper(this);
+	signalMapper->setMapping(act, 0);
+	connect(act, SIGNAL(triggered()), signalMapper, SLOT(map()));
+	connect(signalMapper, SIGNAL(mapped(int)), application()->editor(), SLOT(zoomTo(int)));
+
+	viewItems << act;
+
+	act = QEAction::newAction(QtIconLoader::icon("zoom-in"),
+			tr("Zoom In"),
+			application(),
+			tr("Zoom in"),
+			tr("Ctrl++"));
+	connect(act, SIGNAL(triggered()), application()->editor(), SLOT(zoomIn()));
+	viewItems << act;
+
+	act = QEAction::newAction(QtIconLoader::icon("zoom-out"),
+			tr("Zoom Out"),
+			application(),
+			tr("Zoom Out"),
+			tr("Ctrl+-"));
+	connect(act, SIGNAL(triggered()), application()->editor(), SLOT(zoomOut()));
+	viewItems << act;
+
+	QEAction *foldAllAct = QEAction::newAction(tr("Toggle All Code Folds"),
+				application(),
+				tr("Folds or unfolds all lines"));
+	foldAllAct->showInToolbar = false;
+	connect(foldAllAct, SIGNAL(triggered()), 
+		application()->editor(), SLOT(foldAll()));
+	foldAllAct->setEnabled(application()->editorSettings->displayCodeFolding());
+	viewItems << foldAllAct;
+	
+	// Settings
 	act = QEAction::newAction(tr("Line Numbers"),
 			application(),
 			tr("Display line numbers in the margin"),
 			0, true,
 			application()->editorSettings->displayLineNumbers());
 	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setLineNumbers(bool)));
-	viewItems << act;
+	settingsItems << act;
 		
 	act = QEAction::newAction(tr("White space"),
 			application(),
@@ -225,7 +264,7 @@ void Actions::setupActions()
 			0, true,
 			application()->editorSettings->displayWhitespace());
 	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setWhiteSpaceVis(bool)));
-	viewItems << act;
+	settingsItems << act;
 
 	act = QEAction::newAction(tr("Wrap Text"),
 			application(),
@@ -233,7 +272,7 @@ void Actions::setupActions()
 			0, true,
 			application()->editorSettings->displayWrapText());
 	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setWrapText(bool)));
-	viewItems << act;
+	settingsItems << act;
 
 	act = QEAction::newAction(tr("Highlight Current Line"),
 			application(),
@@ -241,7 +280,7 @@ void Actions::setupActions()
 			0, true,
 			application()->editorSettings->highlightCurrentLine());
 	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setHighlightCurrentLine(bool)));
-	viewItems << act;
+	settingsItems << act;
 
 	act = QEAction::newAction(tr("Indicate Edge Column"),
 			application(),
@@ -249,21 +288,12 @@ void Actions::setupActions()
 			0, true,
 			application()->editorSettings->displayEdge());
 	connect(act, SIGNAL(triggered(bool)), application(), SLOT(setDisplayEdge(bool)));
-	viewItems << act;
+	settingsItems << act;
 
 	act = new QEAction(application());
 	act->setSeparator(true);
-	viewItems << act;
+	settingsItems << act;
 
-	QEAction *foldAllAct = QEAction::newAction(tr("Toggle All Code Folds"),
-				application(),
-				tr("Folds or unfolds all lines"));
-	connect(foldAllAct, SIGNAL(triggered()), 
-		application()->editor(), SLOT(foldAll()));
-	foldAllAct->setEnabled(application()->editorSettings->displayCodeFolding());
-	viewItems << foldAllAct;
-	
-	// Settings
 	act = QEAction::newAction(tr("Code Folding"),
 			application(),
 			tr("Enable/disable code folding"),
@@ -399,6 +429,12 @@ void Actions::setupToolBars()
 		if ((*iter)->showInToolbar)
 			editToolBar->addAction(*iter);
 	
+	// View toolbar
+	viewToolBar = application()->addToolBar(tr("View"));
+	for (iter = viewItems.begin(); iter != viewItems.end(); iter++)
+		if ((*iter)->showInToolbar)
+			viewToolBar->addAction(*iter);
+
 	// Find toolbar
 	findToolBar = application()->addToolBar(tr("&Find"));
 	findEntry = new QLineEdit();

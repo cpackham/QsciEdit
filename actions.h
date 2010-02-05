@@ -47,6 +47,7 @@ private:
 	QMenu *helpMenu;
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
+	QToolBar *viewToolBar;
 	QToolBar *findToolBar;
 	QLineEdit *findEntry;
 
