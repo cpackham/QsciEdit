@@ -135,7 +135,7 @@ void Actions::setupActions()
 	findAct = QEAction::newAction(QtIconLoader::icon("edit-find"), 
 			tr("&Find..."), 
 			application(),
-			tr("Search for text"),
+			tr("Simple text search"),
 			QKeySequence::Find);
 	connect(findAct, SIGNAL(triggered()), this, SLOT(find()));
 	editItemsMisc << findAct;
@@ -163,7 +163,7 @@ void Actions::setupActions()
 	act = QEAction::newAction(QtIconLoader::icon("edit-find"), 
 			tr("&Search..."), 
 			application(),
-			tr("Search for text"),
+			tr("Advanced text search"),
 			tr("Ctrl+Shift+F"));
 	connect(act, SIGNAL(triggered()), application(), SLOT(search()));
 	act->showInToolbar = false;
