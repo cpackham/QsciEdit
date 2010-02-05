@@ -5,7 +5,7 @@
 #include "qsciapp.h"
 #include "qticonloader.h"
 #include "lexersel.h"
-#include "finddialog.h"
+#include "searchdialog.h"
 #include "actions.h"
 #include "globals.h"
 #include "editorsettings.h"
