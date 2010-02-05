@@ -57,6 +57,7 @@ private:
 	QCheckBox *wholeCheck;
 	QCheckBox *wrapCheck;
 	QCheckBox *backCheck;
+	QCheckBox *advCheck;
 	QPushButton *findButton;
 	QPushButton *replaceButton;
 	QPushButton *cancelButton;

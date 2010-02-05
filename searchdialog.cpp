@@ -26,21 +26,28 @@ SearchDialog::SearchDialog(QWidget *parent)
 	input->addWidget(entry);
 
 	QHBoxLayout *replace = new QHBoxLayout();
-	rlabel = new QLabel(tr("Replace with:"));
+	rlabel = new QLabel(tr("Replace With:"));
 	rentry = new QLineEdit();
 	rentry->setMinimumWidth(200);
 	rlabel->setBuddy(rentry);
 	replace->addWidget(rlabel);
 	replace->addWidget(rentry);
 
-
 	QVBoxLayout *optionLayout = new QVBoxLayout();
-	regexCheck = new QCheckBox("&Regular Expression");
+	regexCheck = new QCheckBox("&Match Regular Expression");
 	caseCheck = new QCheckBox("&Match Case");
-	caseCheck->setChecked(true);
 	wholeCheck = new QCheckBox("W&hole Word");
-	wrapCheck = new QCheckBox("&Wrap");
+	wrapCheck = new QCheckBox("&Wrap Search");
 	backCheck = new QCheckBox("Search &Backwards");
+	advCheck = new QCheckBox("Advance on Replace");
+
+	regexCheck->setChecked(options->regex);
+	caseCheck->setChecked(options->caseSensitive);
+	wholeCheck->setChecked(options->wholeWord);
+	wrapCheck ->setChecked(options->wrap);
+	backCheck->setChecked(options->backwards);
+	advCheck->setChecked(true);
+
 	optionLayout->addLayout(input);
 	optionLayout->addLayout(replace);
 	optionLayout->addWidget(regexCheck);
@@ -48,6 +55,7 @@ SearchDialog::SearchDialog(QWidget *parent)
 	optionLayout->addWidget(wholeCheck);
 	optionLayout->addWidget(wrapCheck);
 	optionLayout->addWidget(backCheck);
+	optionLayout->addWidget(advCheck);
 
 	QDialogButtonBox *buttons = new QDialogButtonBox(Qt::Vertical);
 	findButton = new QPushButton(tr("&Find"));
@@ -95,8 +103,14 @@ void SearchDialog::replaceButtonPressed()
 	QString text;
 	text = rentry->text();
 
-	if (!text.isEmpty() || options->start) {
-		emit replaceWithText(text);
+	if (text.isEmpty())
+		return;
+	if (options->start)
+		return;
+
+	emit replaceWithText(text);
+
+	if (advCheck->isChecked()) {
 		findButtonPressed();
 	}
 }
