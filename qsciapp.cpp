@@ -117,10 +117,13 @@ void QsciApp::closeEvent(QCloseEvent *event)
 {
 	if (saveIfModified()) {
 		saveSettings();
+		if (searchDialog)
+			delete searchDialog;
 		event->accept();
 	} else {
 		event->ignore();
 	}
+
 }
 
 void QsciApp::dragEnterEvent(QDragEnterEvent *event)
@@ -333,7 +336,6 @@ void QsciApp::search()
 
 void QsciApp::searchText(const QString text, SearchOptions *opts)
 {
-	qDebug() << "text = " << text << "start =" << opts->start;
 	bool found;
 
 	if (opts->start) {
