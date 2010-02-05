@@ -321,6 +321,8 @@ void QsciApp::search()
 		searchDialog = new SearchDialog();
 		connect (searchDialog, SIGNAL(searchText(const QString, SearchOptions*)),
 			this, SLOT(searchText(const QString, SearchOptions*)));
+		connect (searchDialog, SIGNAL(replaceWithText(const QString)),
+			this, SLOT(replaceWithText(const QString)));
 	}
 	if (textEdit->hasSelectedText()) {
 		searchDialog->setSearchText(textEdit->selectedText());
@@ -338,6 +340,11 @@ void QsciApp::searchText(const QString text, SearchOptions *opts)
 	if (!found) {
 		statusBar()->showMessage(tr("No match"));
 	}
+}
+
+void QsciApp::replaceWithText(const QString text)
+{
+	textEdit->replace(text);
 }
 
 void QsciApp::askForLine()

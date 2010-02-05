@@ -70,6 +70,7 @@ private slots:
 	void positionChanged(int,int);
 	void search();
 	void searchText(const QString, SearchOptions*);
+	void replaceWithText(const QString text);
 
 private:
 	void createActions();

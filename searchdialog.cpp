@@ -14,13 +14,23 @@ SearchOptions::SearchOptions(QObject *parent):
 SearchDialog::SearchDialog(QWidget *parent)
 	: QDialog(parent)
 {
-	QHBoxLayout *input = new QHBoxLayout();
 	options = new SearchOptions();
+
+	QHBoxLayout *input = new QHBoxLayout();
 	label = new QLabel(tr("Find Text:"));
 	entry = new QLineEdit();
+	entry->setMinimumWidth(200);
 	label->setBuddy(entry);
 	input->addWidget(label);
 	input->addWidget(entry);
+
+	QHBoxLayout *replace = new QHBoxLayout();
+	rlabel = new QLabel(tr("Replace with:"));
+	rentry = new QLineEdit();
+	rentry->setMinimumWidth(200);
+	rlabel->setBuddy(rentry);
+	replace->addWidget(rlabel);
+	replace->addWidget(rentry);
 
 
 	QVBoxLayout *optionLayout = new QVBoxLayout();
@@ -31,6 +41,7 @@ SearchDialog::SearchDialog(QWidget *parent)
 	wrapCheck = new QCheckBox("&Wrap");
 	backCheck = new QCheckBox("Search &Backwards");
 	optionLayout->addLayout(input);
+	optionLayout->addLayout(replace);
 	optionLayout->addWidget(regexCheck);
 	optionLayout->addWidget(caseCheck);
 	optionLayout->addWidget(wholeCheck);
@@ -40,8 +51,10 @@ SearchDialog::SearchDialog(QWidget *parent)
 	QDialogButtonBox *buttons = new QDialogButtonBox(Qt::Vertical);
 	findButton = new QPushButton(tr("&Find"));
 	findButton->setDefault(true);
+	replaceButton = new QPushButton(tr("&Replace"));
 	cancelButton = new QPushButton(tr("&Close"));
 	buttons->addButton(findButton, QDialogButtonBox::ActionRole);
+	buttons->addButton(replaceButton, QDialogButtonBox::ActionRole);
 	buttons->addButton(cancelButton, QDialogButtonBox::ActionRole);
 
 	QGridLayout *mainLayout = new QGridLayout();
@@ -50,6 +63,7 @@ SearchDialog::SearchDialog(QWidget *parent)
 	setLayout(mainLayout);
 
 	connect(findButton, SIGNAL(pressed()), this, SLOT(findButtonPressed()));
+	connect(replaceButton, SIGNAL(pressed()), this, SLOT(replaceButtonPressed()));
 	connect(cancelButton, SIGNAL(pressed()), this, SLOT(close()));
 	connect(regexCheck, SIGNAL(toggled(bool)), options, SLOT(setRegex(bool)));
 	connect(caseCheck, SIGNAL(toggled(bool)), options, SLOT(setCaseSensitive(bool)));
@@ -70,5 +84,16 @@ void SearchDialog::findButtonPressed()
 
 	if (!text.isEmpty()){
 		emit searchText(text, options);
+	}
+}
+
+void SearchDialog::replaceButtonPressed()
+{
+	QString text;
+	text = rentry->text();
+
+	if (!text.isEmpty()){
+		emit replaceWithText(text);
+		findButtonPressed();
 	}
 }

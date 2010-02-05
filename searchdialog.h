@@ -39,19 +39,24 @@ public:
 
 signals:
 	void searchText(const QString text, SearchOptions *opts);
+	void replaceWithText(const QString text);
 
 private slots:
 	void findButtonPressed();
+	void replaceButtonPressed();
 private:
 	SearchOptions *options;
 	QLabel *label;
 	QLineEdit *entry;
+	QLabel *rlabel;
+	QLineEdit *rentry;
 	QCheckBox *regexCheck;
 	QCheckBox *caseCheck;
 	QCheckBox *wholeCheck;
 	QCheckBox *wrapCheck;
 	QCheckBox *backCheck;
 	QPushButton *findButton;
+	QPushButton *replaceButton;
 	QPushButton *cancelButton;
 };
 
