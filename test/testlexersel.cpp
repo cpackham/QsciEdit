@@ -16,31 +16,32 @@ private slots:
 void TestLexerSelector::getLexerForFile_data()
 {
 	QTest::addColumn<QString>("filename");
+	QTest::addColumn<QString>("linecomment");
 
-	QTest::newRow("C++ file 1") << "main.cpp";
-	QTest::newRow("C++ file 2") << "main.cc";
-	QTest::newRow("C file") << "main.c";
-	QTest::newRow("H file") << "main.h";
-	QTest::newRow("Java file") << "main.java";
-	QTest::newRow("Javascript file") << "main.js";
-	QTest::newRow("Bash file") << "main.bash";
-	QTest::newRow("sh file") << "main.sh";
-	QTest::newRow("Makefile 1") << "Makefile";
-	QTest::newRow("Makefile 2") << "main.mk";
-	QTest::newRow("Makefile 3") << "main.pro";
-	QTest::newRow("Python file") << "main.py";
-	QTest::newRow("Patch file 1") << "main.patch";
-	QTest::newRow("Patch file 2") << "main.diff";
-	QTest::newRow("Patch file 3") << "patch.txt";
-	QTest::newRow("TCL file 1") << "main.tcl";
-	QTest::newRow("Perl file 1") << "main.pl";
-	QTest::newRow("Perl file 2") << "main.pm";
-	QTest::newRow("HTML file 1") << "main.html";
-	QTest::newRow("HTML file 2") << "main.xhtml";
-	QTest::newRow("CSS file") << "main.css";
-	QTest::newRow("Asciidoc file") << "main.txt";
-	QTest::newRow("TeX file") << "main.tex";
-	QTest::newRow("MIB file") << "main.mib";
+	QTest::newRow("C++ file 1") << "main.cpp" << "// ";
+	QTest::newRow("C++ file 2") << "main.cc" << "// ";
+	QTest::newRow("C file") << "main.c" << "// ";
+	QTest::newRow("H file") << "main.h" << "// ";
+	QTest::newRow("Java file") << "main.java" << "// ";
+	QTest::newRow("Javascript file") << "main.js" << "// ";
+	QTest::newRow("Bash file") << "main.bash" << "# ";
+	QTest::newRow("sh file") << "main.sh" << "# ";
+	QTest::newRow("Makefile 1") << "Makefile" << "# ";
+	QTest::newRow("Makefile 2") << "main.mk" << "# ";
+	QTest::newRow("Makefile 3") << "main.pro" << "# ";
+	QTest::newRow("Python file") << "main.py" << "# ";
+	QTest::newRow("Patch file 1") << "main.patch" << "";
+	QTest::newRow("Patch file 2") << "main.diff" << "";
+	QTest::newRow("Patch file 3") << "patch.txt" << "";
+	QTest::newRow("TCL file 1") << "main.tcl" << "# ";
+	QTest::newRow("Perl file 1") << "main.pl" << "# ";
+	QTest::newRow("Perl file 2") << "main.pm" << "# ";
+	QTest::newRow("HTML file 1") << "main.html" << "";
+	QTest::newRow("HTML file 2") << "main.xhtml" << "";
+	QTest::newRow("CSS file") << "main.css" << "// ";
+	QTest::newRow("Asciidoc file") << "main.txt" << "// ";
+	QTest::newRow("TeX file") << "main.tex" << "% ";
+	QTest::newRow("MIB file") << "main.mib" << "-- ";
 
 }
 
@@ -52,6 +53,7 @@ void TestLexerSelector::getLexerForFile()
 	QsciLexer *lexer = NULL;
 
 	QFETCH(QString, filename);
+	QFETCH(QString, linecomment);
 
 	lexer = LexerSelector::getLexerForFile(filename, &lineCommentString,
 		&blockCommentStartString, 
@@ -59,6 +61,7 @@ void TestLexerSelector::getLexerForFile()
 		&blockCommentEndString);
 
 	QVERIFY(lexer != NULL);
+	QCOMPARE(lineCommentString, linecomment);
 }
 
 void TestLexerSelector::getLexerForText_data()
@@ -93,7 +96,7 @@ void TestLexerSelector::getLexerForText()
 		&blockCommentEndString);
 
 	QVERIFY(lexer != NULL);
-	QCOMPARE(linecomment,lineCommentString);
+	QCOMPARE(lineCommentString, linecomment);
 }
 
 QTEST_MAIN(TestLexerSelector)
