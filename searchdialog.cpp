@@ -16,6 +16,7 @@ SearchDialog::SearchDialog(QWidget *parent)
 	: QDialog(parent)
 {
 	options = new SearchOptions();
+	setWindowTitle("Search/Replace");
 
 	QHBoxLayout *input = new QHBoxLayout();
 	label = new QLabel(tr("Find Text:"));
