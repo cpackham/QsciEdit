@@ -5,10 +5,11 @@ SearchOptions::SearchOptions(QObject *parent):
 	QObject(parent)
 {
 	regex = false;
-	caseSensitive  = false;
+	caseSensitive  = true;
 	wholeWord = false;
 	wrap = false;
 	backwards  = false;
+	start = true;
 }
 
 SearchDialog::SearchDialog(QWidget *parent)
@@ -62,6 +63,8 @@ SearchDialog::SearchDialog(QWidget *parent)
 	mainLayout->addWidget(buttons, 0, 1);
 	setLayout(mainLayout);
 
+	connect(entry, SIGNAL(textChanged(const QString)), this, SLOT(textChanged(const QString)));
+	connect(entry, SIGNAL(returnPressed()), this, SLOT(findButtonPressed()));
 	connect(findButton, SIGNAL(pressed()), this, SLOT(findButtonPressed()));
 	connect(replaceButton, SIGNAL(pressed()), this, SLOT(replaceButtonPressed()));
 	connect(cancelButton, SIGNAL(pressed()), this, SLOT(close()));
@@ -82,7 +85,7 @@ void SearchDialog::findButtonPressed()
 	QString text;
 	text = entry->text();
 
-	if (!text.isEmpty()){
+	if (!text.isEmpty()) {
 		emit searchText(text, options);
 	}
 }
@@ -92,8 +95,13 @@ void SearchDialog::replaceButtonPressed()
 	QString text;
 	text = rentry->text();
 
-	if (!text.isEmpty()){
+	if (!text.isEmpty() || options->start) {
 		emit replaceWithText(text);
 		findButtonPressed();
 	}
+}
+
+void SearchDialog::textChanged(const QString text)
+{
+	options->start = true;
 }

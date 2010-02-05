@@ -20,13 +20,14 @@ public:
 	bool wholeWord;
 	bool wrap;
 	bool backwards;
+	bool start;
 
 public slots:
-	void setRegex(bool b) { regex = b; };
-	void setCaseSensitive(bool b) { caseSensitive = b; };
-	void setWholeWord(bool b) { wholeWord = b; };
-	void setWrap(bool b) { wrap = b; };
-	void setBackwards(bool b) { backwards = b; };
+	void setRegex(bool b) { regex = b; start = true; };
+	void setCaseSensitive(bool b) { caseSensitive = b; start = true; };
+	void setWholeWord(bool b) { wholeWord = b; start = true; };
+	void setWrap(bool b) { wrap = b; start = true; };
+	void setBackwards(bool b) { backwards = b; start = true; };
 };
 
 
@@ -44,6 +45,7 @@ signals:
 private slots:
 	void findButtonPressed();
 	void replaceButtonPressed();
+	void textChanged(const QString);
 private:
 	SearchOptions *options;
 	QLabel *label;

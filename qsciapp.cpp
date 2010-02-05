@@ -333,12 +333,21 @@ void QsciApp::search()
 
 void QsciApp::searchText(const QString text, SearchOptions *opts)
 {
-	qDebug() << "text = " << text;
-	bool found = textEdit->findFirst(text, opts->regex, opts->caseSensitive,
-		opts->wholeWord, opts->wrap, !opts->backwards);
+	qDebug() << "text = " << text << "start =" << opts->start;
+	bool found;
+
+	if (opts->start) {
+		found = textEdit->findFirst(text, opts->regex, opts->caseSensitive,
+			opts->wholeWord, opts->wrap, !opts->backwards);
+		opts->start = false;
+	} else {
+		found = textEdit->findNext();
+	}
 
 	if (!found) {
 		statusBar()->showMessage(tr("No match"));
+	} else {
+		statusBar()->showMessage(tr(""));
 	}
 }
 
