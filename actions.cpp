@@ -160,6 +160,15 @@ void Actions::setupActions()
 	act->setSeparator(true);
 	editItemsMisc << act;
 
+	act = QEAction::newAction(QtIconLoader::icon("edit-find"), 
+			tr("&Search..."), 
+			application(),
+			tr("Search for text"),
+			tr("Ctrl+Shift+F"));
+	connect(act, SIGNAL(triggered()), application(), SLOT(search()));
+	act->showInToolbar = false;
+	editItemsMisc << act;
+
 	act = QEAction::newAction(tr("&Goto Line"), 
 			application(),
 			tr("Jump to a line number"),

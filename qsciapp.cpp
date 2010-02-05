@@ -20,7 +20,7 @@ QsciApp::QsciApp(const QString fileArg, unsigned int lineArg)
 	setWindowTitle(tr("[*] - %1").arg(APPLICATION_NAME));
 	textEdit = new QsciScintilla;
 	textEdit->setFont(QFont("Liberation Mono", 10));
-	findDialog = NULL;
+	searchDialog = NULL;
 	lineCommentString = "";
 	blockCommentStartString = "";
 	blockCommentMiddleString = "";
@@ -313,6 +313,31 @@ void QsciApp::setIndentationsUseTabs(bool enable, int width)
 void QsciApp::positionChanged(int line, int col)
 {
  	markLine(line);
+}
+
+void QsciApp::search()
+{
+	if (!searchDialog) {
+		searchDialog = new SearchDialog();
+		connect (searchDialog, SIGNAL(searchText(const QString, SearchOptions*)),
+			this, SLOT(searchText(const QString, SearchOptions*)));
+	}
+	if (textEdit->hasSelectedText()) {
+		searchDialog->setSearchText(textEdit->selectedText());
+	}
+	
+	searchDialog->show();
+}
+
+void QsciApp::searchText(const QString text, SearchOptions *opts)
+{
+	qDebug() << "text = " << text;
+	bool found = textEdit->findFirst(text, opts->regex, opts->caseSensitive,
+		opts->wholeWord, opts->wrap, !opts->backwards);
+
+	if (!found) {
+		statusBar()->showMessage(tr("No match"));
+	}
 }
 
 void QsciApp::askForLine()

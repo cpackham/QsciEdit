@@ -5,7 +5,8 @@
 class QLineEdit;
 class QFileInfo;
 class QsciScintilla;
-class FindDialog;
+class SearchDialog;
+class SearchOptions;
 class Actions;
 class EditorSettings;
 
@@ -67,6 +68,8 @@ private slots:
 	void setEolModeUnix(bool);
 	void setEolModeMac(bool);
 	void positionChanged(int,int);
+	void search();
+	void searchText(const QString, SearchOptions*);
 
 private:
 	void createActions();
@@ -92,7 +95,7 @@ private:
 	Actions *actions;
 	QString curFile;
 	QFileInfo *curFileInfo;
-	FindDialog *findDialog;
+	SearchDialog *searchDialog;
 	struct FileArgs {
 		QString fileName;
 		int line;

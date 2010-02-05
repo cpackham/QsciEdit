@@ -38,7 +38,7 @@ public:
 	void setSearchText(const QString text);
 
 signals:
-	void findText(const QString text, SearchOptions *opts);
+	void searchText(const QString text, SearchOptions *opts);
 
 private slots:
 	void findButtonPressed();

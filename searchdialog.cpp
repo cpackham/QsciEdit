@@ -22,30 +22,31 @@ SearchDialog::SearchDialog(QWidget *parent)
 	input->addWidget(label);
 	input->addWidget(entry);
 
-	QGridLayout *optionLayout = new QGridLayout();
+
+	QVBoxLayout *optionLayout = new QVBoxLayout();
 	regexCheck = new QCheckBox("&Regular Expression");
 	caseCheck = new QCheckBox("&Match Case");
 	caseCheck->setChecked(true);
 	wholeCheck = new QCheckBox("W&hole Word");
 	wrapCheck = new QCheckBox("&Wrap");
 	backCheck = new QCheckBox("Search &Backwards");
-	optionLayout->addWidget(regexCheck, 0, 0);
-	optionLayout->addWidget(caseCheck, 0, 1);
-	optionLayout->addWidget(wholeCheck, 1, 0);
-	optionLayout->addWidget(wrapCheck, 1, 1);
-	optionLayout->addWidget(backCheck, 2, 0);
+	optionLayout->addLayout(input);
+	optionLayout->addWidget(regexCheck);
+	optionLayout->addWidget(caseCheck);
+	optionLayout->addWidget(wholeCheck);
+	optionLayout->addWidget(wrapCheck);
+	optionLayout->addWidget(backCheck);
 
-	QHBoxLayout *buttons = new QHBoxLayout();
+	QDialogButtonBox *buttons = new QDialogButtonBox(Qt::Vertical);
 	findButton = new QPushButton(tr("&Find"));
 	findButton->setDefault(true);
 	cancelButton = new QPushButton(tr("&Close"));
-	buttons->addWidget(findButton);
-	buttons->addWidget(cancelButton);
+	buttons->addButton(findButton, QDialogButtonBox::ActionRole);
+	buttons->addButton(cancelButton, QDialogButtonBox::ActionRole);
 
-	QVBoxLayout *mainLayout = new QVBoxLayout();
-	mainLayout->addLayout(input);
-	mainLayout->addLayout(optionLayout);
-	mainLayout->addLayout(buttons);
+	QGridLayout *mainLayout = new QGridLayout();
+	mainLayout->addLayout(optionLayout, 0, 0);
+	mainLayout->addWidget(buttons, 0, 1);
 	setLayout(mainLayout);
 
 	connect(findButton, SIGNAL(pressed()), this, SLOT(findButtonPressed()));
@@ -68,6 +69,6 @@ void SearchDialog::findButtonPressed()
 	text = entry->text();
 
 	if (!text.isEmpty()){
-		emit findText(text, options);
+		emit searchText(text, options);
 	}
 }
