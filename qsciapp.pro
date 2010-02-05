@@ -13,7 +13,7 @@ CONFIG(debug, debug|release) {
 SOURCES = qsciapp.cpp \
 	qticonloader.cpp \
 	lexersel.cpp \
-	finddialog.cpp \
+	searchdialog.cpp \
 	actions.cpp \
 	editorsettings.cpp \
 	asciidoclexer.cpp \
@@ -23,7 +23,7 @@ SOURCES = qsciapp.cpp \
 HEADERS = qsciapp.h \
 	qticonloader.h \
 	lexersel.h \
-	finddialog.h \
+	searchdialog.h \
 	actions.h \
 	globals.h \
 	editorsettings.h \
