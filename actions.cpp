@@ -174,6 +174,7 @@ void Actions::setupActions()
 			tr("Jump to a line number"),
 			tr("Ctrl+G"));
 	connect(act, SIGNAL(triggered()), application(), SLOT(askForLine()));
+	editItemsMisc << act;
 
 	act = QEAction::newAction(tr("Goto matching brace"), 
 			application(),
